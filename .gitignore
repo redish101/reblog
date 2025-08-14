@@ -1,5 +1,7 @@
 reblog
-reblog.db
 .env
+
+tmp
+reblog.db
 
 .DS_Store
