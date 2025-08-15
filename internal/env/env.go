@@ -12,6 +12,7 @@ var (
 	Port        int
 	DatabaseURL string
 	SecretKey   string
+	OwnerEmail  string
 )
 
 func Init() {
@@ -21,6 +22,7 @@ func Init() {
 	Port = getAsInt("PORT", 3000)
 	DatabaseURL = getAsString("DATABASE_URL", "postgres://user:password@localhost:5432/reblog?sslmode=disable")
 	SecretKey = getAsString("SECRET_KEY", "reblog")
+	OwnerEmail = getAsString("OWNER_EMAIL", "")
 }
 
 func getAsInt(key string, defaultValue int) int {
