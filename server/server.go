@@ -3,6 +3,7 @@ package server
 import (
 	"strconv"
 
+	_ "git.liteyuki.org/redish101/reblog/docs"
 	"git.liteyuki.org/redish101/reblog/internal/env"
 	"git.liteyuki.org/redish101/reblog/server/router/apiv1"
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -14,7 +15,7 @@ import (
 //	@version		1.0
 //	@description	reblog 后端 api
 //	@basePath		/api/v1
-
+//
 // 启动服务端
 func Start() {
 	env.Init()

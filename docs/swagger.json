@@ -1,7 +1,35 @@
 {
     "swagger": "2.0",
     "info": {
-        "contact": {}
+        "description": "reblog 后端 api",
+        "title": "reblog api",
+        "contact": {},
+        "version": "1.0"
     },
-    "paths": {}
+    "basePath": "/api/v1",
+    "paths": {
+        "/healthz": {
+            "get": {
+                "description": "健康检查",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "healthz"
+                ],
+                "summary": "健康检查",
+                "responses": {
+                    "200": {
+                        "description": "安然无恙！",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

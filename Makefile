@@ -16,7 +16,7 @@ dev:
 	$(AIR)
 
 apidoc:
-	$(SWAG) init --parseDependency --parseInternal --output ./docs
+	$(SWAG) init --parseDependency --parseInternal --output ./docs --generalInfo server/server.go
 
 fmt:
 	$(GOFUMPT) -l -w .
