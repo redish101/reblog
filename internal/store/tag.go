@@ -1,57 +1,62 @@
 package store
 
-import "git.liteyuki.org/redish101/reblog/internal/model"
+import (
+	"git.liteyuki.org/redish101/reblog/internal/model"
+	"gorm.io/gorm"
+)
 
 type TagStore struct{}
 
 var Tag = &TagStore{}
 
-// CreateTagParams 创建标签的参数
-type CreateTagParams struct {
-	Name string `json:"name"`
-	Slug string `json:"slug"`
-}
-
 // Create 创建标签
-func (s *TagStore) Create(params CreateTagParams) error {
-	return db.Create(&model.TagModel{
-		Name: params.Name,
-		Slug: params.Slug,
-	}).Error
+func (s *TagStore) Create(tag *model.TagModel) error {
+	return DB.Create(tag).Error
 }
 
 // List 列出所有标签
 func (s *TagStore) List(paginationParams PaginationParams) (*PaginationResponse[*model.TagModel], error) {
 	var tags []*model.TagModel
-	return Paginate(db, &paginationParams, &tags)
+	return Paginate(DB, &paginationParams, &tags)
 }
 
-// FindBySlug 通过 Slug 获取标签
-func (s *TagStore) FindBySlug(slug string) (*model.TagModel, error) {
+// FindByName 通过 Name 获取标签
+func (s *TagStore) FindByName(name string) (*model.TagModel, error) {
 	var tag model.TagModel
-	if err := db.Where("slug = ?", slug).First(&tag).Error; err != nil {
+	if err := DB.Where("name = ?", name).First(&tag).Error; err != nil {
 		return nil, err
 	}
 	return &tag, nil
 }
 
-// UpdateBySlug 通过 Slug 更新标签
-func (s *TagStore) UpdateBySlug(slug string, params CreateTagParams) error {
-	return db.Model(&model.TagModel{}).Where("slug = ?", slug).Updates(&model.TagModel{
-		Name: params.Name,
-		Slug: params.Slug,
-	}).Error
+// FindByNameWithTx 在事务中通过 Name 获取标签
+func (s *TagStore) FindByNameWithTx(tx *gorm.DB, name string) (*model.TagModel, error) {
+	var tag model.TagModel
+	if err := tx.Where("name = ?", name).First(&tag).Error; err != nil {
+		return nil, err
+	}
+	return &tag, nil
 }
 
-// DeleteBySlug 通过 Slug 删除标签
-func (s *TagStore) DeleteBySlug(slug string) error {
-	return db.Where("slug = ?", slug).Delete(&model.TagModel{}).Error
+// CreateWithTx 在事务中创建标签
+func (s *TagStore) CreateWithTx(tx *gorm.DB, tag *model.TagModel) error {
+	return tx.Create(tag).Error
+}
+
+// UpdateByName 通过 Name 更新标签
+func (s *TagStore) UpdateByName(name string, tag *model.TagModel) error {
+	return DB.Model(&model.TagModel{}).Where("name = ?", name).Updates(tag).Error
+}
+
+// DeleteByName 通过 Name 删除标签
+func (s *TagStore) DeleteByName(name string) error {
+	return DB.Where("name = ?", name).Delete(&model.TagModel{}).Error
 }
 
 // Count 统计标签数量
 func (s *TagStore) Count() (int64, error) {
 	var count int64
-	if err := db.Model(&model.TagModel{}).Count(&count).Error; err != nil {
+	if err := DB.Model(&model.TagModel{}).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return count, nil

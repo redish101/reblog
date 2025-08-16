@@ -18,6 +18,18 @@ func RespSuccess(c *app.RequestContext, data any) {
 	RespSuccessWithStatus(c, http.StatusOK, data)
 }
 
+type FailureResponse struct {
+	Error string `json:"error"`
+}
+
 func RespFailure(c *app.RequestContext, statusCode int, message string) {
-	resp(c, statusCode, map[string]string{"error": message})
+	resp(c, statusCode, FailureResponse{Error: message})
+}
+
+func RespBadRequest(c *app.RequestContext, message string) {
+	RespFailure(c, http.StatusBadRequest, message)
+}
+
+func RespInternalServerError(c *app.RequestContext, message string) {
+	RespFailure(c, http.StatusInternalServerError, message)
 }

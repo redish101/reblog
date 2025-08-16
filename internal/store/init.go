@@ -8,22 +8,22 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+var DB *gorm.DB
 
 func Init() error {
 	var err error
 
 	if env.Dev {
-		db, err = gorm.Open(sqlite.Open(env.DatabaseURL))
+		DB, err = gorm.Open(sqlite.Open(env.DatabaseURL))
 	} else {
-		db, err = gorm.Open(postgres.Open(env.DatabaseURL))
+		DB, err = gorm.Open(postgres.Open(env.DatabaseURL))
 	}
 
 	if err != nil {
 		return err
 	}
 
-	if err := migrateModels(db); err != nil {
+	if err := migrateModels(DB); err != nil {
 		return err
 	}
 

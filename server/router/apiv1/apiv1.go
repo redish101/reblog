@@ -15,6 +15,7 @@ import (
 func RegisterRoutes(server *server.Hertz) {
 	api := server.Group("/api/v1")
 
+	registerPostRoutes(api)
 	registerHealthzRoutes(api)
 
 	// 仅在开发环境下添加 swagger 路由

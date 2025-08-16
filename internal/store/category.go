@@ -1,60 +1,62 @@
 package store
 
-import "git.liteyuki.org/redish101/reblog/internal/model"
+import (
+	"git.liteyuki.org/redish101/reblog/internal/model"
+	"gorm.io/gorm"
+)
 
 type CategoryStore struct{}
 
 var Category = &CategoryStore{}
 
-// CreateCategoryParams 创建分类的参数
-type CreateCategoryParams struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Slug        string `json:"slug"`
-}
-
 // Create 创建分类
-func (s *CategoryStore) Create(params CreateCategoryParams) error {
-	return db.Create(&model.CategoryModel{
-		Name:        params.Name,
-		Description: params.Description,
-		Slug:        params.Slug,
-	}).Error
+func (s *CategoryStore) Create(category *model.CategoryModel) error {
+	return DB.Create(category).Error
 }
 
 // List 列出所有分类
 func (s *CategoryStore) List(paginationParams PaginationParams) (*PaginationResponse[*model.CategoryModel], error) {
 	var categories []*model.CategoryModel
-	return Paginate(db, &paginationParams, &categories)
+	return Paginate(DB, &paginationParams, &categories)
 }
 
-// FindBySlug 通过 Slug 获取分类
-func (s *CategoryStore) FindBySlug(slug string) (*model.CategoryModel, error) {
+// FindByName 通过 Name 获取分类
+func (s *CategoryStore) FindByName(name string) (*model.CategoryModel, error) {
 	var category model.CategoryModel
-	if err := db.Where("slug = ?", slug).First(&category).Error; err != nil {
+	if err := DB.Where("name = ?", name).First(&category).Error; err != nil {
 		return nil, err
 	}
 	return &category, nil
 }
 
-// UpdateBySlug 通过 Slug 更新分类
-func (s *CategoryStore) UpdateBySlug(slug string, params CreateCategoryParams) error {
-	return db.Model(&model.CategoryModel{}).Where("slug = ?", slug).Updates(&model.CategoryModel{
-		Name:        params.Name,
-		Description: params.Description,
-		Slug:        params.Slug,
-	}).Error
+// FindByNameWithTx 在事务中通过 Name 获取分类
+func (s *CategoryStore) FindByNameWithTx(tx *gorm.DB, name string) (*model.CategoryModel, error) {
+	var category model.CategoryModel
+	if err := tx.Where("name = ?", name).First(&category).Error; err != nil {
+		return nil, err
+	}
+	return &category, nil
 }
 
-// DeleteBySlug 通过 Slug 删除分类
-func (s *CategoryStore) DeleteBySlug(slug string) error {
-	return db.Where("slug = ?", slug).Delete(&model.CategoryModel{}).Error
+// CreateWithTx 在事务中创建分类
+func (s *CategoryStore) CreateWithTx(tx *gorm.DB, category *model.CategoryModel) error {
+	return tx.Create(category).Error
+}
+
+// UpdateByName 通过 Name 更新分类
+func (s *CategoryStore) UpdateByName(name string, category *model.CategoryModel) error {
+	return DB.Model(&model.CategoryModel{}).Where("name = ?", name).Updates(category).Error
+}
+
+// DeleteByName 通过 Name 删除分类
+func (s *CategoryStore) DeleteByName(name string) error {
+	return DB.Where("name = ?", name).Delete(&model.CategoryModel{}).Error
 }
 
 // Count 统计分类数量
 func (s *CategoryStore) Count() (int64, error) {
 	var count int64
-	if err := db.Model(&model.CategoryModel{}).Count(&count).Error; err != nil {
+	if err := DB.Model(&model.CategoryModel{}).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return count, nil

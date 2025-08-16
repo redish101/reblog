@@ -10,26 +10,14 @@ type PostStore struct{}
 
 var Post = &PostStore{}
 
-// CreatePostParams 创建文章的参数
-type CreatePostParams struct {
-	Slug       string `json:"slug"`
-	Title      string `json:"title"`
-	Summary    string `json:"summary"`
-	CategoryID uint   `json:"category_id"`
-	IsDraft    bool   `json:"is_draft"`
-	Content    string `json:"content"`
+// Create 创建文章
+func (s *PostStore) Create(post *model.PostModel) error {
+	return DB.Create(post).Preload("Tags").Preload("Category").Error
 }
 
-// Create 创建文章
-func (s *PostStore) Create(params CreatePostParams) error {
-	return db.Create(&model.PostModel{
-		Slug:       params.Slug,
-		Title:      params.Title,
-		Summary:    params.Summary,
-		CategoryID: params.CategoryID,
-		IsDraft:    params.IsDraft,
-		Content:    params.Content,
-	}).Error
+// CreateWithTx 在事务中创建文章
+func (s *PostStore) CreateWithTx(tx *gorm.DB, post *model.PostModel) error {
+	return tx.Create(post).Preload("Tags").Preload("Category").Error
 }
 
 // List 列出所有文章
@@ -38,12 +26,14 @@ func (s *PostStore) List(paginationParams PaginationParams, currentUserEmail str
 
 	// 如果当前用户是 owner，返回包含草稿的文章
 	if currentUserEmail == env.OwnerEmail {
-		return Paginate(db, &paginationParams, &posts)
+		return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Tags").Preload("Category").Order("created_at DESC")
+		})
 	}
 
 	// 否则只返回已发布的文章（非草稿）
-	return PaginateWithQuery(db, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
-		return db.Where("is_draft = ?", false)
+	return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_draft = ?", false).Preload("Tags").Preload("Category").Order("created_at DESC")
 	})
 }
 
@@ -53,41 +43,101 @@ func (s *PostStore) FindBySlug(slug string, currentUserEmail string) (*model.Pos
 
 	// 如果当前用户是 owner，可以查看所有文章（包括草稿）
 	if currentUserEmail == env.OwnerEmail {
-		if err := db.Where("slug = ?", slug).First(&post).Error; err != nil {
+		if err := DB.Where("slug = ?", slug).Preload("Tags").Preload("Category").First(&post).Error; err != nil {
 			return nil, err
 		}
 		return &post, nil
 	}
 
 	// 否则只能查看已发布的文章（非草稿）
-	if err := db.Where("slug = ? AND is_draft = ?", slug, false).First(&post).Error; err != nil {
+	if err := DB.Where("slug = ? AND is_draft = ?", slug, false).
+		Preload("Tags").Preload("Category").
+		First(&post).Error; err != nil {
 		return nil, err
 	}
 	return &post, nil
 }
 
-// UpdateBySlug 通过 Slug 更新文章
-func (s *PostStore) UpdateBySlug(slug string, params CreatePostParams) error {
-	return db.Model(&model.PostModel{}).Where("slug = ?", slug).Updates(&model.PostModel{
-		Slug:       params.Slug,
-		Title:      params.Title,
-		Summary:    params.Summary,
-		CategoryID: params.CategoryID,
-		IsDraft:    params.IsDraft,
-		Content:    params.Content,
-	}).Error
+// Update 更新文章
+func (s *PostStore) Update(post *model.PostModel) error {
+	return DB.Updates(post).Error
 }
 
 // DeleteBySlug 通过 Slug 删除文章
 func (s *PostStore) DeleteBySlug(slug string) error {
-	return db.Where("slug = ?", slug).Delete(&model.PostModel{}).Error
+	return DB.Where("slug = ?", slug).Delete(&model.PostModel{}).Error
+}
+
+func (s *PostStore) FindByTag(tagName string, paginationParams PaginationParams, currentUserEmail string) (*PaginationResponse[*model.PostModel], error) {
+	var posts []*model.PostModel
+
+	if currentUserEmail == env.OwnerEmail {
+		// 如果是 owner，返回所有文章（包括草稿）
+		return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Tags").Preload("Category").
+				Joins("JOIN post_tags ON posts.id = post_tags.post_model_id").
+				Joins("JOIN tags ON post_tags.tag_model_id = tags.id").
+				Where("tags.name = ?", tagName).
+				Order("posts.created_at DESC")
+		})
+	}
+
+	// 否则只返回已发布的文章（非草稿）
+	return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Tags").Preload("Category").
+			Joins("JOIN post_tags ON posts.id = post_tags.post_model_id").
+			Joins("JOIN tags ON post_tags.tag_model_id = tags.id").
+			Where("tags.name = ? AND posts.is_draft = ?", tagName, false).
+			Order("posts.created_at DESC")
+	})
+}
+
+// FindByCategory 通过分类名称查找文章
+func (s *PostStore) FindByCategory(categoryName string, paginationParams PaginationParams, currentUserEmail string) (*PaginationResponse[*model.PostModel], error) {
+	var posts []*model.PostModel
+
+	if currentUserEmail == env.OwnerEmail {
+		// 如果是 owner，返回所有文章（包括草稿）
+		return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+			return db.Preload("Tags").Preload("Category").
+				Joins("JOIN categories ON posts.category_id = categories.id").
+				Where("categories.name = ?", categoryName).
+				Order("posts.created_at DESC")
+		})
+	}
+
+	// 否则只返回已发布的文章（非草稿）
+	return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+		return db.Preload("Tags").Preload("Category").
+			Joins("JOIN categories ON posts.category_id = categories.id").
+			Where("categories.name = ? AND posts.is_draft = ?", categoryName, false).
+			Order("posts.created_at DESC")
+	})
 }
 
 // Count 统计文章数量
 func (s *PostStore) Count() (int64, error) {
 	var count int64
-	if err := db.Model(&model.PostModel{}).Count(&count).Error; err != nil {
+	if err := DB.Model(&model.PostModel{}).Count(&count).Error; err != nil {
 		return 0, err
 	}
 	return count, nil
+}
+
+// IsSlugExists 检查 slug 是否已存在
+func (s *PostStore) IsSlugExists(slug string) (bool, error) {
+	var count int64
+	if err := DB.Model(&model.PostModel{}).Where("slug = ?", slug).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+// IsSlugExistsExcludeID 检查 slug 是否已存在（排除指定 ID，用于更新时检查）
+func (s *PostStore) IsSlugExistsExcludeID(slug string, excludeID uint) (bool, error) {
+	var count int64
+	if err := DB.Model(&model.PostModel{}).Where("slug = ? AND id != ?", slug, excludeID).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

@@ -1,4 +1,94 @@
 basePath: /api/v1
+definitions:
+  common.FailureResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  handler.CreatePostRequest:
+    properties:
+      category:
+        type: string
+      content:
+        type: string
+      is_draft:
+        type: boolean
+      slug:
+        type: string
+      summary:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  model.CategoryModel:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.PostModel:
+    properties:
+      category:
+        $ref: '#/definitions/model.CategoryModel'
+      category_id:
+        type: integer
+      content:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      is_draft:
+        type: boolean
+      slug:
+        type: string
+      summary:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/model.TagModel'
+        type: array
+      title:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  model.TagModel:
+    properties:
+      created_at:
+        type: string
+      deleted_at:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
 info:
   contact: {}
   description: reblog 后端 api
@@ -20,4 +110,34 @@ paths:
       summary: 健康检查
       tags:
       - healthz
+  /posts:
+    post:
+      consumes:
+      - application/json
+      description: 创建文章
+      parameters:
+      - description: 创建文章的请求体
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreatePostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 创建成功
+          schema:
+            $ref: '#/definitions/model.PostModel'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 创建文章
+      tags:
+      - post
 swagger: "2.0"
