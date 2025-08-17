@@ -32,6 +32,20 @@ definitions:
       title:
         type: string
     type: object
+  handler.GithubCallBackResponse:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
+  handler.LogoutResponse:
+    properties:
+      message:
+        type: string
+    type: object
   model.CategoryModel:
     properties:
       created_at:
@@ -95,6 +109,74 @@ info:
   title: reblog api
   version: "1.0"
 paths:
+  /auth/github:
+    get:
+      consumes:
+      - application/json
+      description: 跳转到 GitHub OAuth 授权页面
+      parameters:
+      - description: 登录成功后的重定向地址
+        in: query
+        name: redirect_uri
+        type: string
+      produces:
+      - application/json
+      responses:
+        "302":
+          description: 重定向到 GitHub 授权页面
+          schema:
+            type: string
+      summary: GitHub OAuth 登录
+      tags:
+      - auth
+  /auth/github/callback:
+    get:
+      consumes:
+      - application/json
+      description: 处理 GitHub OAuth 回调，获取用户信息并生成 JWT token
+      parameters:
+      - description: GitHub OAuth 授权码
+        in: query
+        name: code
+        required: true
+        type: string
+      - description: 状态参数
+        in: query
+        name: state
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登录成功
+          schema:
+            $ref: '#/definitions/handler.GithubCallBackResponse'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: GitHub OAuth 回调
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      description: 清除登录状态
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登出成功
+          schema:
+            $ref: '#/definitions/handler.LogoutResponse'
+      summary: 登出
+      tags:
+      - auth
   /healthz:
     get:
       consumes:

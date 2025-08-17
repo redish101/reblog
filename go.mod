@@ -4,6 +4,7 @@ go 1.24.5
 
 require (
 	github.com/cloudwego/hertz v0.10.1
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/hertz-contrib/swagger v0.1.1
 	github.com/joho/godotenv v1.5.1
 	github.com/sirupsen/logrus v1.9.3

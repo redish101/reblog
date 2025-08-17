@@ -1,6 +1,8 @@
 package env
 
 import (
+	"crypto/ed25519"
+	"crypto/sha256"
 	"os"
 	"strconv"
 
@@ -8,11 +10,16 @@ import (
 )
 
 var (
-	Dev         bool
-	Port        int
-	DatabaseURL string
-	SecretKey   string
-	OwnerEmail  string
+	Dev               bool
+	Port              int
+	DatabaseURL       string
+	SecretKey         string
+	OwnerEmail        string
+	JWTPrivateKey     ed25519.PrivateKey
+	JWTPublicKey      ed25519.PublicKey
+	GitHubClientID    string
+	GitHubSecret      string
+	GitHubRedirectURL string
 )
 
 func Init() {
@@ -23,6 +30,24 @@ func Init() {
 	DatabaseURL = getAsString("DATABASE_URL", "postgres://user:password@localhost:5432/reblog?sslmode=disable")
 	SecretKey = getAsString("SECRET_KEY", "reblog")
 	OwnerEmail = getAsString("OWNER_EMAIL", "")
+	GitHubClientID = getAsString("GITHUB_CLIENT_ID", "")
+	GitHubSecret = getAsString("GITHUB_SECRET", "")
+	GitHubRedirectURL = getAsString("GITHUB_REDIRECT_URL", "http://localhost:3000/api/v1/auth/github/callback")
+
+	// 从 SecretKey 生成 ed25519 密钥对
+	generateKeyPair()
+}
+
+// generateKeyPair 从 SecretKey 生成 ed25519 密钥对
+func generateKeyPair() {
+	// 使用 SHA256 对 SecretKey 进行哈希，得到32字节的种子
+	hash := sha256.Sum256([]byte(SecretKey))
+
+	// 从种子生成 ed25519 私钥
+	JWTPrivateKey = ed25519.NewKeyFromSeed(hash[:])
+
+	// 从私钥获取公钥
+	JWTPublicKey = JWTPrivateKey.Public().(ed25519.PublicKey)
 }
 
 func getAsInt(key string, defaultValue int) int {

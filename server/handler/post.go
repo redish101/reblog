@@ -130,3 +130,23 @@ func (h *PostHandler) Create(ctx context.Context, c *app.RequestContext) {
 
 	common.RespSuccess(c, post)
 }
+
+type ListPostsRequest struct {
+	store.PaginationParams
+
+	Categories []string `json:"category"` // 分类名称
+	Tags       []string `json:"tags"`     // 标签名称
+}
+
+//	@summary		列出文章
+//	@description	列出文章
+//	@tags			post
+//	@accept			json
+//	@produce		json
+//	@param			body	body		ListPostsRequest							true	"列出文章的请求体"
+//	@success		200		{object}	store.PaginationResponse[model.PostModel]	"获取成功"
+//	@failure		400		{object}	common.FailureResponse						"请求参数错误"
+//	@failure		500		{object}	common.FailureResponse						"服务器内部错误"
+//	@router			/posts [get]
+//
+// 列出文章
