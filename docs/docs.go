@@ -154,6 +154,73 @@ const docTemplate = `{
             }
         },
         "/posts": {
+            "get": {
+                "description": "列出文章",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "summary": "列出文章",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码，默认为 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量，默认为 10",
+                        "name": "size",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "分类名称过滤",
+                        "name": "categories",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "description": "标签名称过滤",
+                        "name": "tags",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "获取成功",
+                        "schema": {
+                            "$ref": "#/definitions/store.PaginationResponse-model_PostModel"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -373,6 +440,42 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                }
+            }
+        },
+        "store.PaginationResponse-model_PostModel": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "数据列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PostModel"
+                    }
+                },
+                "has_next": {
+                    "description": "是否有下一页",
+                    "type": "boolean"
+                },
+                "has_prev": {
+                    "description": "是否有上一页",
+                    "type": "boolean"
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页大小",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "description": "总页数",
+                    "type": "integer"
                 }
             }
         }

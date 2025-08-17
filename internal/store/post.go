@@ -37,6 +37,42 @@ func (s *PostStore) List(paginationParams PaginationParams, currentUserEmail str
 	})
 }
 
+// ListWithFilters 根据分类和标签过滤列出文章
+func (s *PostStore) ListWithFilters(paginationParams PaginationParams, categories []string, tags []string, currentUserEmail string) (*PaginationResponse[*model.PostModel], error) {
+	var posts []*model.PostModel
+
+	return PaginateWithQuery(DB, &paginationParams, &posts, func(db *gorm.DB) *gorm.DB {
+		query := db.Preload("Tags").Preload("Category")
+
+		// 如果不是 owner，只显示已发布的文章
+		if currentUserEmail != env.OwnerEmail {
+			query = query.Where("is_draft = ?", false)
+		}
+
+		// 按分类过滤
+		if len(categories) > 0 {
+			query = query.Joins("JOIN categories ON posts.category_id = categories.id").
+				Where("categories.name IN ?", categories)
+		}
+
+		// 标签过滤
+		if len(tags) > 0 {
+			// 使用子查询来过滤包含指定标签的文章
+			query = query.Where("posts.id IN (?)",
+				DB.Table("posts").
+					Joins("JOIN post_tags ON posts.id = post_tags.post_model_id").
+					Joins("JOIN tags ON post_tags.tag_model_id = tags.id").
+					Where("tags.name IN ?", tags).
+					Select("posts.id").
+					Group("posts.id").
+					Having("COUNT(DISTINCT tags.name) = ?", len(tags)), // 确保包含所有指定标签
+			)
+		}
+
+		return query.Order("posts.created_at DESC")
+	})
+}
+
 // FindBySlug 通过 Slug 获取文章
 func (s *PostStore) FindBySlug(slug string, currentUserEmail string) (*model.PostModel, error) {
 	var post model.PostModel

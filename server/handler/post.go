@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 
 	"git.liteyuki.org/redish101/reblog/internal/model"
 	"git.liteyuki.org/redish101/reblog/internal/store"
@@ -146,10 +147,49 @@ type ListPostsRequest struct {
 //	@tags			post
 //	@accept			json
 //	@produce		json
-//	@param			body	body		ListPostsRequest							true	"列出文章的请求体"
-//	@success		200		{object}	store.PaginationResponse[model.PostModel]	"获取成功"
-//	@failure		400		{object}	common.FailureResponse						"请求参数错误"
-//	@failure		500		{object}	common.FailureResponse						"服务器内部错误"
+//	@param			page		query		int											false	"页码，默认为 1"
+//	@param			size		query		int											false	"每页数量，默认为 10"
+//	@param			categories	query		[]string									false	"分类名称过滤"
+//	@param			tags		query		[]string									false	"标签名称过滤"
+//	@success		200			{object}	store.PaginationResponse[model.PostModel]	"获取成功"
+//	@failure		400			{object}	common.FailureResponse						"请求参数错误"
+//	@failure		500			{object}	common.FailureResponse						"服务器内部错误"
 //	@router			/posts [get]
 //
-// 列出文章
+// List 列出文章
+func (h *PostHandler) List(ctx context.Context, c *app.RequestContext) {
+	var req ListPostsRequest
+
+	// 解析分页参数
+	if err := c.BindQuery(&req.PaginationParams); err != nil {
+		common.RespBadRequest(c, "分页参数错误: "+err.Error())
+		return
+	}
+
+	// 解析分类过滤参数 (支持多个分类，用逗号分隔)
+	if categoriesStr := c.Query("categories"); categoriesStr != "" {
+		req.Categories = strings.Split(string(categoriesStr), ",")
+	}
+
+	// 解析标签过滤参数 (支持多个标签，用逗号分隔)
+	if tagsStr := c.Query("tags"); tagsStr != "" {
+		req.Tags = strings.Split(string(tagsStr), ",")
+	}
+
+	// 获取当前用户信息（用于判断是否显示草稿）
+	currentUser := common.GetCurrentUser(ctx)
+	currentUserEmail := ""
+	if currentUser != nil {
+		currentUserEmail = currentUser.Email
+	}
+
+	// 调用 store 方法获取文章列表
+	posts, err := store.Post.ListWithFilters(req.PaginationParams, req.Categories, req.Tags, currentUserEmail)
+	if err != nil {
+		logrus.Errorf("Failed to list posts: %v", err)
+		common.RespInternalServerError(c, "获取文章列表失败")
+		return
+	}
+
+	common.RespSuccess(c, posts)
+}
