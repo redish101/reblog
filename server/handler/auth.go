@@ -283,7 +283,9 @@ type LogoutResponse struct {
 //	@tags			auth
 //	@accept			json
 //	@produce		json
-//	@success		200	{object}	LogoutResponse	"登出成功"
+//	@success		200	{object}	LogoutResponse			"登出成功"
+//	@failure		401	{object}	common.FailureResponse	"未授权"
+//	@security		ApiKeyAuth
 //	@router			/auth/logout [post]
 //
 // Logout 登出

@@ -98,6 +98,11 @@ const docTemplate = `{
         },
         "/auth/logout": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "清除登录状态",
                 "consumes": [
                     "application/json"
@@ -114,6 +119,12 @@ const docTemplate = `{
                         "description": "登出成功",
                         "schema": {
                             "$ref": "#/definitions/handler.LogoutResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
                         }
                     }
                 }
@@ -144,6 +155,11 @@ const docTemplate = `{
         },
         "/posts": {
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "创建文章",
                 "consumes": [
                     "application/json"
@@ -175,6 +191,18 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "未授权",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "权限不足",
                         "schema": {
                             "$ref": "#/definitions/common.FailureResponse"
                         }
@@ -347,6 +375,14 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "ApiKeyAuth": {
+            "description": "JWT token stored in cookie",
+            "type": "apiKey",
+            "name": "token",
+            "in": "cookie"
         }
     }
 }`

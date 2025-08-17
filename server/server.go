@@ -12,10 +12,15 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//	@title			reblog api
-//	@version		1.0
-//	@description	reblog 后端 api
-//	@basePath		/api/v1
+//	@title						reblog api
+//	@version					1.0
+//	@description				reblog 后端 api
+//	@basePath					/api/v1
+//
+//	@securityDefinitions.apikey	ApiKeyAuth
+//	@in							cookie
+//	@name						token
+//	@description				JWT token stored in cookie
 //
 // 启动服务端
 func Start() {

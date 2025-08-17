@@ -78,7 +78,10 @@ type CreatePostRequest struct {
 //	@param			body	body		CreatePostRequest		true	"创建文章的请求体"
 //	@success		200		{object}	model.PostModel			"创建成功"
 //	@failure		400		{object}	common.FailureResponse	"请求参数错误"
+//	@failure		401		{object}	common.FailureResponse	"未授权"
+//	@failure		403		{object}	common.FailureResponse	"权限不足"
 //	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@security		ApiKeyAuth
 //	@router			/posts [post]
 //
 // 创建文章
