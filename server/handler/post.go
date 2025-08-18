@@ -10,7 +10,6 @@ import (
 	"git.liteyuki.org/redish101/reblog/internal/store"
 	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -28,7 +27,6 @@ func (h *PostHandler) findOrCreateCategory(categoryName string) (*model.Category
 
 	category, err := store.Category.FindByName(categoryName)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		logrus.Infof("Category %s not found, creating new category", categoryName)
 		newCategory := &model.CategoryModel{Name: categoryName}
 		if err := store.Category.Create(newCategory); err != nil {
 			return nil, err
@@ -186,10 +184,157 @@ func (h *PostHandler) List(ctx context.Context, c *app.RequestContext) {
 	// 调用 store 方法获取文章列表
 	posts, err := store.Post.ListWithFilters(req.PaginationParams, req.Categories, req.Tags, currentUserEmail)
 	if err != nil {
-		logrus.Errorf("Failed to list posts: %v", err)
 		common.RespInternalServerError(c, "获取文章列表失败")
 		return
 	}
 
 	common.RespSuccess(c, posts)
+}
+
+//	@summary		获取文章详情
+//	@description	获取文章详情
+//	@tags			post
+//	@accept			json
+//	@produce		json
+//	@param			slug	path		string					true	"文章 Slug"
+//	@success		200		{object}	model.PostModel			"获取成功"
+//	@failure		400		{object}	common.FailureResponse	"请求参数错误"
+//	@failure		404		{object}	common.FailureResponse	"文章未找到"
+//	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@router			/posts/{slug} [get]
+//
+// Get 获取文章详情
+func (h *PostHandler) Get(ctx context.Context, c *app.RequestContext) {
+	slug := c.Param("slug")
+	if slug == "" {
+		common.RespBadRequest(c, "Slug 不能为空")
+		return
+	}
+
+	post, err := store.Post.FindBySlug(slug, common.GetCurrentUser(ctx).Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		common.RespFailure(c, http.StatusNotFound, "文章未找到")
+		return
+	} else if err != nil {
+		common.RespInternalServerError(c, "获取文章失败")
+		return
+	}
+
+	common.RespSuccess(c, post)
+}
+
+//	@summary		更新文章
+//	@description	更新文章
+//	@tags			post
+//	@accept			json
+//	@produce		json
+//	@param			slug	path		string					true	"文章 Slug"
+//	@param			body	body		CreatePostRequest		true	"更新文章的请求体"
+//	@success		200		{object}	model.PostModel			"更新成功"
+//	@failure		400		{object}	common.FailureResponse	"请求参数错误"
+//	@failure		404		{object}	common.FailureResponse	"文章未找到"
+//	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@security		ApiKeyAuth
+//	@router			/posts/{slug} [put]
+//
+// Update 更新文章
+func (h *PostHandler) Update(ctx context.Context, c *app.RequestContext) {
+	slug := c.Param("slug")
+	if slug == "" {
+		common.RespBadRequest(c, "Slug 不能为空")
+		return
+	}
+
+	var req CreatePostRequest
+	if err := c.BindAndValidate(&req); err != nil {
+		common.RespBadRequest(c, err.Error())
+		return
+	}
+
+	if isSlugExits, err := store.Post.IsSlugExists(req.Slug); err != nil {
+		common.RespInternalServerError(c, err.Error())
+		return
+	} else if isSlugExits && req.Slug != slug {
+		common.RespFailure(c, http.StatusConflict, "Slug 已存在")
+		return
+	}
+
+	post, err := store.Post.FindBySlug(slug, common.GetCurrentUser(ctx).Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		common.RespFailure(c, http.StatusNotFound, "文章未找到")
+		return
+	} else if err != nil {
+		common.RespInternalServerError(c, "获取文章失败")
+		return
+	}
+
+	// 处理分类
+	category, err := h.findOrCreateCategory(req.Category)
+	if err != nil {
+		common.RespInternalServerError(c, err.Error())
+		return
+	}
+
+	// 处理标签
+	tags, err := h.findOrCreateTags(req.Tags)
+	if err != nil {
+		common.RespInternalServerError(c, err.Error())
+		return
+	}
+
+	// 更新文章内容
+	post.Title = req.Title
+	post.Content = req.Content
+	post.Slug = req.Slug
+	post.Summary = req.Summary
+	post.CategoryID = category.ID
+	post.Category = *category
+	post.IsDraft = req.IsDraft
+	post.Tags = tags
+
+	if err := store.Post.Update(post); err != nil {
+		common.RespInternalServerError(c, "更新文章失败")
+		return
+	}
+
+	common.RespSuccess(c, post)
+}
+
+
+//	@summary		删除文章
+//	@description	删除文章
+//	@tags			post
+//	@accept			json
+//	@produce		json
+//	@param			slug	path	string	true	"文章 Slug"
+//	@success		204		"删除成功"
+//	@failure		400		{object}	common.FailureResponse	"请求参数错误"
+//	@failure		404		{object}	common.FailureResponse	"文章未找到"
+//	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@security		ApiKeyAuth
+//	@router			/posts/{slug} [delete]
+//
+// Delete 删除文章
+func (h *PostHandler) Delete(ctx context.Context, c *app.RequestContext) {
+	slug := c.Param("slug")
+	if slug == "" {
+		common.RespBadRequest(c, "Slug 不能为空")
+		return
+	}
+
+	_, err := store.Post.FindBySlug(slug, common.GetCurrentUser(ctx).Email)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		common.RespFailure(c, http.StatusNotFound, "文章未找到")
+		return
+	} else if err != nil {
+		common.RespInternalServerError(c, "获取文章失败")
+		return
+	}
+
+	if err := store.Post.DeleteBySlug(slug); err != nil {
+		common.RespInternalServerError(c, "删除文章失败")
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }

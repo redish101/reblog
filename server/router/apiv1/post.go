@@ -9,15 +9,16 @@ import (
 func registerPostRoutes(api *route.RouterGroup) {
 	postHandler := handler.NewPostHandler()
 
-	// 需要管理员权限的路由
 	postsAdmin := api.Group("/posts").Use(middleware.UseAuth(true))
 	{
 		postsAdmin.POST("", postHandler.Create)
+		postsAdmin.PUT("/:slug", postHandler.Update)
+		postsAdmin.DELETE("/:slug", postHandler.Delete)
 	}
 
-	// 可选认证的路由（不登录也能访问，但登录用户获得额外权限）
 	postsPublic := api.Group("/posts").Use(middleware.UseAuth(false))
 	{
 		postsPublic.GET("", postHandler.List)
+		postsPublic.GET("/:slug", postHandler.Get)
 	}
 }
