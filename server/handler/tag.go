@@ -41,6 +41,7 @@ type CreateOrUpdateTagRequest struct {
 //	@success		200		{object}	model.TagModel				"成功创建标签"
 //	@failure		400		{object}	common.FailureResponse		"请求参数错误"
 //	@failure		500		{object}	common.FailureResponse		"服务器内部错误"
+//	@security		ApiKeyAuth
 //	@router			/tags [post]
 //
 // Create 创建标签
@@ -82,6 +83,7 @@ func (h *TagHandler) Create(ctx context.Context, c *app.RequestContext) {
 //	@failure		400		{object}	common.FailureResponse		"请求参数错误"
 //	@failure		404		{object}	common.FailureResponse		"标签未找到"
 //	@failure		500		{object}	common.FailureResponse		"服务器内部错误"
+//	@security		ApiKeyAuth
 //	@router			/tags/{name} [put]
 //
 // Update 更新标签
@@ -133,6 +135,7 @@ func (h *TagHandler) Update(ctx context.Context, c *app.RequestContext) {
 //	@success		204		"成功删除标签"
 //	@failure		404		{object}	common.FailureResponse	"标签未找到"
 //	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@security		ApiKeyAuth
 //	@router			/tags/{name} [delete]
 //
 // Delete 删除标签

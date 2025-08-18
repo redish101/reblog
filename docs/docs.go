@@ -754,6 +754,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "创建一个新的标签",
                 "consumes": [
                     "application/json"
@@ -842,6 +847,11 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "更新现有标签",
                 "consumes": [
                     "application/json"
@@ -899,6 +909,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "删除指定名称的标签",
                 "consumes": [
                     "application/json"

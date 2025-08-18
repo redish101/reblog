@@ -704,6 +704,8 @@ paths:
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/common.FailureResponse'
+      security:
+      - ApiKeyAuth: []
       summary: 创建标签
       tags:
       - tag
@@ -731,6 +733,8 @@ paths:
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/common.FailureResponse'
+      security:
+      - ApiKeyAuth: []
       summary: 删除标签
       tags:
       - tag
@@ -797,6 +801,8 @@ paths:
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/common.FailureResponse'
+      security:
+      - ApiKeyAuth: []
       summary: 更新标签
       tags:
       - tag
