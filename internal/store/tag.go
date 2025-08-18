@@ -44,8 +44,8 @@ func (s *TagStore) CreateWithTx(tx *gorm.DB, tag *model.TagModel) error {
 }
 
 // UpdateByName 通过 Name 更新标签
-func (s *TagStore) UpdateByName(name string, tag *model.TagModel) error {
-	return DB.Model(&model.TagModel{}).Where("name = ?", name).Updates(tag).Error
+func (s *TagStore) Update(tag *model.TagModel) error {
+	return DB.Updates(tag).Error
 }
 
 // DeleteByName 通过 Name 删除标签

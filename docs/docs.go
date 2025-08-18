@@ -132,7 +132,7 @@ const docTemplate = `{
         },
         "/categories": {
             "get": {
-                "description": "获取所有分类信息",
+                "description": "获取分类列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -142,7 +142,7 @@ const docTemplate = `{
                 "tags": [
                     "category"
                 ],
-                "summary": "获取所有分类",
+                "summary": "获取分类列表",
                 "parameters": [
                     {
                         "type": "integer",
@@ -161,10 +161,7 @@ const docTemplate = `{
                     "200": {
                         "description": "获取成功",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.CategoryModel"
-                            }
+                            "$ref": "#/definitions/store.PaginationResponse-model_CategoryModel"
                         }
                     },
                     "400": {
@@ -418,7 +415,7 @@ const docTemplate = `{
         },
         "/posts": {
             "get": {
-                "description": "列出文章",
+                "description": "获取文章列表",
                 "consumes": [
                     "application/json"
                 ],
@@ -428,7 +425,7 @@ const docTemplate = `{
                 "tags": [
                     "post"
                 ],
-                "summary": "列出文章",
+                "summary": "获取文章列表",
                 "parameters": [
                     {
                         "type": "integer",
@@ -707,6 +704,239 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/tags": {
+            "get": {
+                "description": "获取标签的列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "获取标签列表",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "页码，默认为 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "每页数量，默认为 10",
+                        "name": "size",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取标签列表",
+                        "schema": {
+                            "$ref": "#/definitions/store.PaginationResponse-model_TagModel"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "创建一个新的标签",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "创建标签",
+                "parameters": [
+                    {
+                        "description": "创建标签的请求体",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.CreateOrUpdateTagRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功创建标签",
+                        "schema": {
+                            "$ref": "#/definitions/model.TagModel"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/tags/{name}": {
+            "get": {
+                "description": "获取指定名称的标签详情",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "获取标签详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名称",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功获取标签详情",
+                        "schema": {
+                            "$ref": "#/definitions/model.TagModel"
+                        }
+                    },
+                    "404": {
+                        "description": "标签未找到",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "更新现有标签",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "更新标签",
+                "parameters": [
+                    {
+                        "description": "更新标签的请求体",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.CreateOrUpdateTagRequest"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "标签名称",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功更新标签",
+                        "schema": {
+                            "$ref": "#/definitions/model.TagModel"
+                        }
+                    },
+                    "400": {
+                        "description": "请求参数错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "标签未找到",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除指定名称的标签",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "tag"
+                ],
+                "summary": "删除标签",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "标签名称",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "成功删除标签"
+                    },
+                    "404": {
+                        "description": "标签未找到",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "服务器内部错误",
+                        "schema": {
+                            "$ref": "#/definitions/common.FailureResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -766,6 +996,14 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.CreateOrUpdateTagRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
                     "type": "string"
                 }
             }
@@ -879,6 +1117,42 @@ const docTemplate = `{
                 }
             }
         },
+        "store.PaginationResponse-model_CategoryModel": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "数据列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.CategoryModel"
+                    }
+                },
+                "has_next": {
+                    "description": "是否有下一页",
+                    "type": "boolean"
+                },
+                "has_prev": {
+                    "description": "是否有上一页",
+                    "type": "boolean"
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页大小",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                }
+            }
+        },
         "store.PaginationResponse-model_PostModel": {
             "type": "object",
             "properties": {
@@ -887,6 +1161,42 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/model.PostModel"
+                    }
+                },
+                "has_next": {
+                    "description": "是否有下一页",
+                    "type": "boolean"
+                },
+                "has_prev": {
+                    "description": "是否有上一页",
+                    "type": "boolean"
+                },
+                "page": {
+                    "description": "当前页码",
+                    "type": "integer"
+                },
+                "page_size": {
+                    "description": "每页大小",
+                    "type": "integer"
+                },
+                "total": {
+                    "description": "总记录数",
+                    "type": "integer"
+                },
+                "total_pages": {
+                    "description": "总页数",
+                    "type": "integer"
+                }
+            }
+        },
+        "store.PaginationResponse-model_TagModel": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "数据列表",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.TagModel"
                     }
                 },
                 "has_next": {

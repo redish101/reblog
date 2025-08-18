@@ -140,8 +140,8 @@ type ListPostsRequest struct {
 	Tags       []string `json:"tags"`     // 标签名称
 }
 
-//	@summary		列出文章
-//	@description	列出文章
+//	@summary		获取文章列表
+//	@description	获取文章列表
 //	@tags			post
 //	@accept			json
 //	@produce		json

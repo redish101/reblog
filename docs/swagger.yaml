@@ -39,6 +39,11 @@ definitions:
       title:
         type: string
     type: object
+  handler.CreateOrUpdateTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
   handler.GithubCallBackResponse:
     properties:
       email:
@@ -110,12 +115,64 @@ definitions:
       updated_at:
         type: string
     type: object
+  store.PaginationResponse-model_CategoryModel:
+    properties:
+      data:
+        description: 数据列表
+        items:
+          $ref: '#/definitions/model.CategoryModel'
+        type: array
+      has_next:
+        description: 是否有下一页
+        type: boolean
+      has_prev:
+        description: 是否有上一页
+        type: boolean
+      page:
+        description: 当前页码
+        type: integer
+      page_size:
+        description: 每页大小
+        type: integer
+      total:
+        description: 总记录数
+        type: integer
+      total_pages:
+        description: 总页数
+        type: integer
+    type: object
   store.PaginationResponse-model_PostModel:
     properties:
       data:
         description: 数据列表
         items:
           $ref: '#/definitions/model.PostModel'
+        type: array
+      has_next:
+        description: 是否有下一页
+        type: boolean
+      has_prev:
+        description: 是否有上一页
+        type: boolean
+      page:
+        description: 当前页码
+        type: integer
+      page_size:
+        description: 每页大小
+        type: integer
+      total:
+        description: 总记录数
+        type: integer
+      total_pages:
+        description: 总页数
+        type: integer
+    type: object
+  store.PaginationResponse-model_TagModel:
+    properties:
+      data:
+        description: 数据列表
+        items:
+          $ref: '#/definitions/model.TagModel'
         type: array
       has_next:
         description: 是否有下一页
@@ -220,7 +277,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 获取所有分类信息
+      description: 获取分类列表
       parameters:
       - description: 页码，默认为 1
         in: query
@@ -236,9 +293,7 @@ paths:
         "200":
           description: 获取成功
           schema:
-            items:
-              $ref: '#/definitions/model.CategoryModel'
-            type: array
+            $ref: '#/definitions/store.PaginationResponse-model_CategoryModel'
         "400":
           description: 请求参数错误
           schema:
@@ -247,7 +302,7 @@ paths:
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/common.FailureResponse'
-      summary: 获取所有分类
+      summary: 获取分类列表
       tags:
       - category
     post:
@@ -405,7 +460,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: 列出文章
+      description: 获取文章列表
       parameters:
       - description: 页码，默认为 1
         in: query
@@ -444,7 +499,7 @@ paths:
           description: 服务器内部错误
           schema:
             $ref: '#/definitions/common.FailureResponse'
-      summary: 列出文章
+      summary: 获取文章列表
       tags:
       - post
     post:
@@ -591,6 +646,160 @@ paths:
       summary: 更新文章
       tags:
       - post
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: 获取标签的列表
+      parameters:
+      - description: 页码，默认为 1
+        in: query
+        name: page
+        type: integer
+      - description: 每页数量，默认为 10
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取标签列表
+          schema:
+            $ref: '#/definitions/store.PaginationResponse-model_TagModel'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 获取标签列表
+      tags:
+      - tag
+    post:
+      consumes:
+      - application/json
+      description: 创建一个新的标签
+      parameters:
+      - description: 创建标签的请求体
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateOrUpdateTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功创建标签
+          schema:
+            $ref: '#/definitions/model.TagModel'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 创建标签
+      tags:
+      - tag
+  /tags/{name}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除指定名称的标签
+      parameters:
+      - description: 标签名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: 成功删除标签
+        "404":
+          description: 标签未找到
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 删除标签
+      tags:
+      - tag
+    get:
+      consumes:
+      - application/json
+      description: 获取指定名称的标签详情
+      parameters:
+      - description: 标签名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功获取标签详情
+          schema:
+            $ref: '#/definitions/model.TagModel'
+        "404":
+          description: 标签未找到
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 获取标签详情
+      tags:
+      - tag
+    put:
+      consumes:
+      - application/json
+      description: 更新现有标签
+      parameters:
+      - description: 更新标签的请求体
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateOrUpdateTagRequest'
+      - description: 标签名称
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功更新标签
+          schema:
+            $ref: '#/definitions/model.TagModel'
+        "400":
+          description: 请求参数错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "404":
+          description: 标签未找到
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+        "500":
+          description: 服务器内部错误
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      summary: 更新标签
+      tags:
+      - tag
 securityDefinitions:
   ApiKeyAuth:
     description: JWT token stored in cookie

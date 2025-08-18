@@ -17,6 +17,7 @@ func RegisterRoutes(server *server.Hertz) {
 
 	registerAuthRoutes(api)
 	registerCategoryRoutes(api)
+	registerTagRoutes(api)
 	registerPostRoutes(api)
 	registerHealthzRoutes(api)
 
