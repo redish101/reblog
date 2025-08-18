@@ -51,25 +51,26 @@ func (s *PostStore) ListWithFilters(paginationParams PaginationParams, categorie
 
 		// 按分类过滤
 		if len(categories) > 0 {
-			query = query.Joins("JOIN categories ON posts.category_id = categories.id").
-				Where("categories.name IN ?", categories)
+			query = query.Where("category_id IN (?)",
+				db.Session(&gorm.Session{}).
+					Model(&model.CategoryModel{}).
+					Select("id").
+					Where("name IN ?", categories))
 		}
 
-		// 标签过滤
+		// 按标签过滤
 		if len(tags) > 0 {
-			// 使用子查询来过滤包含指定标签的文章
-			query = query.Where("posts.id IN (?)",
-				DB.Table("posts").
-					Joins("JOIN post_tags ON posts.id = post_tags.post_model_id").
-					Joins("JOIN tags ON post_tags.tag_model_id = tags.id").
-					Where("tags.name IN ?", tags).
-					Select("posts.id").
-					Group("posts.id").
-					Having("COUNT(DISTINCT tags.name) = ?", len(tags)), // 确保包含所有指定标签
-			)
+			query = query.Where("id IN (?)",
+				db.Session(&gorm.Session{}).
+					Table("post_tags pt").
+					Select("pt.post_model_id").
+					Joins("JOIN tags t ON pt.tag_model_id = t.id").
+					Where("t.name IN ?", tags).
+					Group("pt.post_model_id").
+					Having("COUNT(DISTINCT t.name) = ?", len(tags)))
 		}
 
-		return query.Order("posts.created_at DESC")
+		return query.Order("created_at DESC")
 	})
 }
 
