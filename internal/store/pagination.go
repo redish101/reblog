@@ -6,8 +6,8 @@ import (
 
 // PaginationParams 分页请求参数
 type PaginationParams struct {
-	Page     int `json:"page" form:"page"`           // 页码，从1开始
-	PageSize int `json:"page_size" form:"page_size"` // 每页大小
+	Page     int `json:"page" query:"page"`           // 页码，从1开始
+	PageSize int `json:"page_size" query:"page_size"` // 每页大小
 }
 
 // PaginationResponse 分页响应

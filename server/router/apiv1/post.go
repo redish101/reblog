@@ -19,6 +19,6 @@ func registerPostRoutes(api *route.RouterGroup) {
 	postsPublic := api.Group("/posts").Use(middleware.UseAuth(false))
 	{
 		postsPublic.GET("", postHandler.List)
-		postsPublic.GET("/:slug", postHandler.Get)
+		postsPublic.GET("/:slug", postHandler.FindByName)
 	}
 }

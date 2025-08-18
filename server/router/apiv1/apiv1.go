@@ -16,6 +16,7 @@ func RegisterRoutes(server *server.Hertz) {
 	api := server.Group("/api/v1")
 
 	registerAuthRoutes(api)
+	registerCategoryRoutes(api)
 	registerPostRoutes(api)
 	registerHealthzRoutes(api)
 

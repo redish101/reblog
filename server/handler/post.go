@@ -59,10 +59,10 @@ func (h *PostHandler) findOrCreateTags(tagNames []string) ([]model.TagModel, err
 	return tags, nil
 }
 
-type CreatePostRequest struct {
-	Title    string   `json:"title"`
-	Content  string   `json:"content"`
-	Slug     string   `json:"slug"`
+type CreateOrUpdatePostRequest struct {
+	Title    string   `json:"title" vd:"len($) > 0"`
+	Content  string   `json:"content" vd:"len($) > 0"`
+	Slug     string   `json:"slug" vd:"len($) > 0"`
 	Summary  string   `json:"summary"`
 	Category string   `json:"category"`
 	IsDraft  bool     `json:"is_draft"`
@@ -74,18 +74,18 @@ type CreatePostRequest struct {
 //	@tags			post
 //	@accept			json
 //	@produce		json
-//	@param			body	body		CreatePostRequest		true	"创建文章的请求体"
-//	@success		200		{object}	model.PostModel			"创建成功"
-//	@failure		400		{object}	common.FailureResponse	"请求参数错误"
-//	@failure		401		{object}	common.FailureResponse	"未授权"
-//	@failure		403		{object}	common.FailureResponse	"权限不足"
-//	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@param			body	body		CreateOrUpdatePostRequest	true	"创建文章的请求体"
+//	@success		200		{object}	model.PostModel				"创建成功"
+//	@failure		400		{object}	common.FailureResponse		"请求参数错误"
+//	@failure		401		{object}	common.FailureResponse		"未授权"
+//	@failure		403		{object}	common.FailureResponse		"权限不足"
+//	@failure		500		{object}	common.FailureResponse		"服务器内部错误"
 //	@security		ApiKeyAuth
 //	@router			/posts [post]
 //
 // 创建文章
 func (h *PostHandler) Create(ctx context.Context, c *app.RequestContext) {
-	var req CreatePostRequest
+	var req CreateOrUpdatePostRequest
 	if err := c.BindAndValidate(&req); err != nil {
 		common.RespBadRequest(c, err.Error())
 		return
@@ -159,7 +159,7 @@ func (h *PostHandler) List(ctx context.Context, c *app.RequestContext) {
 	var req ListPostsRequest
 
 	// 解析分页参数
-	if err := c.BindQuery(&req.PaginationParams); err != nil {
+	if err := c.BindQuery(&req); err != nil {
 		common.RespBadRequest(c, "分页参数错误: "+err.Error())
 		return
 	}
@@ -203,8 +203,8 @@ func (h *PostHandler) List(ctx context.Context, c *app.RequestContext) {
 //	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
 //	@router			/posts/{slug} [get]
 //
-// Get 获取文章详情
-func (h *PostHandler) Get(ctx context.Context, c *app.RequestContext) {
+// FindByName 获取文章详情
+func (h *PostHandler) FindByName(ctx context.Context, c *app.RequestContext) {
 	slug := c.Param("slug")
 	if slug == "" {
 		common.RespBadRequest(c, "Slug 不能为空")
@@ -228,12 +228,12 @@ func (h *PostHandler) Get(ctx context.Context, c *app.RequestContext) {
 //	@tags			post
 //	@accept			json
 //	@produce		json
-//	@param			slug	path		string					true	"文章 Slug"
-//	@param			body	body		CreatePostRequest		true	"更新文章的请求体"
-//	@success		200		{object}	model.PostModel			"更新成功"
-//	@failure		400		{object}	common.FailureResponse	"请求参数错误"
-//	@failure		404		{object}	common.FailureResponse	"文章未找到"
-//	@failure		500		{object}	common.FailureResponse	"服务器内部错误"
+//	@param			slug	path		string						true	"文章 Slug"
+//	@param			body	body		CreateOrUpdatePostRequest	true	"更新文章的请求体"
+//	@success		200		{object}	model.PostModel				"更新成功"
+//	@failure		400		{object}	common.FailureResponse		"请求参数错误"
+//	@failure		404		{object}	common.FailureResponse		"文章未找到"
+//	@failure		500		{object}	common.FailureResponse		"服务器内部错误"
 //	@security		ApiKeyAuth
 //	@router			/posts/{slug} [put]
 //
@@ -245,7 +245,7 @@ func (h *PostHandler) Update(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	var req CreatePostRequest
+	var req CreateOrUpdatePostRequest
 	if err := c.BindAndValidate(&req); err != nil {
 		common.RespBadRequest(c, err.Error())
 		return
@@ -300,7 +300,6 @@ func (h *PostHandler) Update(ctx context.Context, c *app.RequestContext) {
 	common.RespSuccess(c, post)
 }
 
-
 //	@summary		删除文章
 //	@description	删除文章
 //	@tags			post
@@ -336,5 +335,5 @@ func (h *PostHandler) Delete(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	common.RespSuccessWithStatus(c, http.StatusNoContent, nil)
 }

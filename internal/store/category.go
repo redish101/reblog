@@ -20,6 +20,11 @@ func (s *CategoryStore) List(paginationParams PaginationParams) (*PaginationResp
 	return Paginate(DB, &paginationParams, &categories)
 }
 
+// Update 更新分类
+func (s *CategoryStore) Update(category *model.CategoryModel) error {
+	return DB.Updates(category).Error
+}
+
 // FindByName 通过 Name 获取分类
 func (s *CategoryStore) FindByName(name string) (*model.CategoryModel, error) {
 	var category model.CategoryModel
