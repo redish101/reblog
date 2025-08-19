@@ -285,7 +285,7 @@ paths:
         type: integer
       - description: 每页数量，默认为 10
         in: query
-        name: size
+        name: page_size
         type: integer
       produces:
       - application/json
@@ -468,7 +468,7 @@ paths:
         type: integer
       - description: 每页数量，默认为 10
         in: query
-        name: size
+        name: page_size
         type: integer
       - collectionFormat: csv
         description: 分类名称过滤
@@ -658,7 +658,7 @@ paths:
         type: integer
       - description: 每页数量，默认为 10
         in: query
-        name: size
+        name: page_size
         type: integer
       produces:
       - application/json

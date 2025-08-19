@@ -146,7 +146,7 @@
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],
@@ -429,7 +429,7 @@
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     },
                     {
@@ -721,7 +721,7 @@
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],

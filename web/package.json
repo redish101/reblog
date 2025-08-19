@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "api": "swagger-typescript-api generate --path ../docs/swagger.yaml --output ./src/lib/api --name generated.ts"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.68.3",
@@ -27,6 +28,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.6",
+    "swagger-typescript-api": "^13.2.8",
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.7",
     "typescript": "^5"

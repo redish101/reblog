@@ -146,7 +146,7 @@ type ListPostsRequest struct {
 //	@accept			json
 //	@produce		json
 //	@param			page		query		int											false	"页码，默认为 1"
-//	@param			size		query		int											false	"每页数量，默认为 10"
+//	@param			page_size	query		int											false	"每页数量，默认为 10"
 //	@param			categories	query		[]string									false	"分类名称过滤"
 //	@param			tags		query		[]string									false	"标签名称过滤"
 //	@success		200			{object}	store.PaginationResponse[model.PostModel]	"获取成功"

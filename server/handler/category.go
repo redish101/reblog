@@ -27,11 +27,11 @@ type ListCategoriesRequest struct {
 //	@tags			category
 //	@accept			json
 //	@produce		json
-//	@param			page	query		int												false	"页码，默认为 1"
-//	@param			size	query		int												false	"每页数量，默认为 10"
-//	@success		200		{object}	store.PaginationResponse[model.CategoryModel]	"获取成功"
-//	@failure		400		{object}	common.FailureResponse							"请求参数错误"
-//	@failure		500		{object}	common.FailureResponse							"服务器内部错误"
+//	@param			page		query		int												false	"页码，默认为 1"
+//	@param			page_size	query		int												false	"每页数量，默认为 10"
+//	@success		200			{object}	store.PaginationResponse[model.CategoryModel]	"获取成功"
+//	@failure		400			{object}	common.FailureResponse							"请求参数错误"
+//	@failure		500			{object}	common.FailureResponse							"服务器内部错误"
 //	@router			/categories [get]
 //
 // List 列出所有分类

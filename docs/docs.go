@@ -153,7 +153,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],
@@ -436,7 +436,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     },
                     {
@@ -728,7 +728,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "每页数量，默认为 10",
-                        "name": "size",
+                        "name": "page_size",
                         "in": "query"
                     }
                 ],
