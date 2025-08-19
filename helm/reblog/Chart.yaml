@@ -1,0 +1,9 @@
+apiVersion: v2
+name: reblog
+description: 数据库的新博客
+
+type: application
+
+version: 0.1.0
+
+appVersion: "latest"
