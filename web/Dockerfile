@@ -18,11 +18,21 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml* .npmrc* ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile;
+RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
 
 # Rebuild the source code only when needed
 FROM base AS builder
+
+ARG CN_MIRROR=false
+
+RUN if [ "$CN_MIRROR" = "true" ]; then \
+        sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories && \
+        corepack enable pnpm && pnpm config set registry https://registry.npmmirror.com --global; \
+    else \
+        corepack enable pnpm; \
+    fi
+
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -32,7 +42,7 @@ COPY . .
 # Uncomment the following line in case you want to disable telemetry during the build.
 # ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN pnpm run build;
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
