@@ -1,0 +1,60 @@
+# Git 相关
+.git
+.gitignore
+.gitmessage
+
+# 构建产物
+reblog
+*.exe
+*.dll
+*.so
+*.dylib
+tmp/
+
+# 测试相关
+*.test
+coverage.out
+coverage.html
+
+# 日志文件
+*.log
+
+# 临时文件
+*.tmp
+*.temp
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS 文件
+.DS_Store
+Thumbs.db
+
+# 文档和说明
+README.md
+
+# Docker 相关
+Dockerfile
+.dockerignore
+docker-compose*.yml
+
+# 前端相关
+web/
+node_modules/
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境文件
+.env
+.env.local
+.env.production
+
+# Makefile
+Makefile

@@ -1,0 +1,48 @@
+services:
+  reblog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        CN_MIRROR: "true"  # 设置为 "true" 启用中国镜像源
+    ports:
+      - "3000:3000"
+    environment:
+      - DEV=false
+      - PORT=3000
+      - DATABASE_URL=postgres://reblog:reblog_password@postgres:5432/reblog?sslmode=disable
+      - SECRET_KEY=your_secret_key_here
+      - OWNER_EMAIL=i@redish101.top
+      - GITHUB_CLIENT_ID=Ov23liks9PSjdoZS8Qyf
+      - GITHUB_SECRET=9a9d13105a3a93f863dbe4be80b9733e1d69e897
+      - GITHUB_REDIRECT_URL=http://localhost:3000/api/v1/auth/github/callback
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - reblog-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: reblog-postgres-dev
+    environment:
+      POSTGRES_DB: reblog
+      POSTGRES_USER: reblog
+      POSTGRES_PASSWORD: reblog_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reblog -d reblog"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - reblog-network
+
+networks:
+  reblog-network:
+    driver: bridge
