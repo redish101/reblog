@@ -1,28 +1,52 @@
-1. Get the application URL by running these commands:
+🎉 reblog 部署成功啦～ 
+
+访问博客：
+
 {{- if .Values.backend.ingress.enabled }}
-{{- range $host := .Values.backend.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.backend.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
+📝 后端 API 地址：
+  http{{ if .Values.backend.ingress.tls }}s{{ end }}://{{ .Values.backend.ingress.host }}
+
 {{- end }}
-{{- else if .Values.frontend.ingress.enabled }}
-{{- range $host := .Values.frontend.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.frontend.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
+{{- if .Values.frontend.ingress.enabled }}
+🌟 前端博客地址：
+  http{{ if .Values.frontend.ingress.tls }}s{{ end }}://{{ .Values.frontend.ingress.host }}
+
 {{- end }}
-{{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "reblog.fullname" . }})
+{{- if not (or .Values.backend.ingress.enabled .Values.frontend.ingress.enabled) }}
+{{- if contains "NodePort" .Values.backend.service.type }}
+🔗 通过 NodePort 访问（后端）：
+  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "reblog.fullname" . }}-backend)
   export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
   echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "LoadBalancer" .Values.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch its status by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "reblog.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "reblog.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.service.port }}
-{{- else if contains "ClusterIP" .Values.service.type }}
-  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "reblog.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
+
+{{- else if contains "LoadBalancer" .Values.backend.service.type }}
+⏰ 注意：LoadBalancer IP 可能需要几分钟才能准备好哦～（等等，数据库你已经有 ip 池用了？！）
+   可以用这个命令查看状态：
+   kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "reblog.fullname" . }}-backend
+  
+  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "reblog.fullname" . }}-backend --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
+  echo http://$SERVICE_IP:{{ .Values.backend.service.port }}
+
+{{- else }}
+🚀 通过端口转发访问（本地开发）：
+
+后端服务：
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "reblog.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=backend" -o jsonpath="{.items[0].metadata.name}")
+  echo "✨ 后端 API 已就绪！访问 http://127.0.0.1:8080"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:{{ .Values.backend.service.targetPort }}
+
+前端服务：
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "reblog.name" . }},app.kubernetes.io/instance={{ .Release.Name }},app.kubernetes.io/component=frontend" -o jsonpath="{.items[0].metadata.name}")
+  echo "🌈 前端页面已就绪！访问 http://127.0.0.1:3000"
+  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 3000:{{ .Values.frontend.service.targetPort }}
+
 {{- end }}
+{{- end }}
+
+📋 有用的命令：
+- 查看 Pod 状态：kubectl get pods -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+- 查看服务状态：kubectl get svc -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }}
+- 查看应用日志：kubectl logs -n {{ .Release.Namespace }} -l app.kubernetes.io/instance={{ .Release.Name }} -f
+
+
+🎈ヾ(≧▽≦*)o
