@@ -20,6 +20,7 @@ var (
 	GitHubClientID    string
 	GitHubSecret      string
 	GitHubRedirectURL string
+	FrontendURL       string
 )
 
 func Init() {
@@ -29,10 +30,11 @@ func Init() {
 	Port = getAsInt("PORT", 3000)
 	DatabaseURL = getAsString("DATABASE_URL", "postgres://user:password@localhost:5432/reblog?sslmode=disable")
 	SecretKey = getAsString("SECRET_KEY", "reblog")
-	OwnerEmail = getAsString("OWNER_EMAIL", "")
+	OwnerEmail = getAsString("OWNER_EMAIL", "i@redish101.top") // 不填就是我的（雾）
 	GitHubClientID = getAsString("GITHUB_CLIENT_ID", "")
 	GitHubSecret = getAsString("GITHUB_SECRET", "")
 	GitHubRedirectURL = getAsString("GITHUB_REDIRECT_URL", "http://localhost:3000/api/v1/auth/github/callback")
+	FrontendURL = getAsString("FRONTEND_URL", "http://localhost:3000")
 
 	// 从 SecretKey 生成 ed25519 密钥对
 	generateKeyPair()

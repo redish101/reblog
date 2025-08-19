@@ -8,11 +8,19 @@ import (
 	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/swagger"
 	swaggerFiles "github.com/swaggo/files"
 )
 
 func RegisterRoutes(server *server.Hertz) {
+	server.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{env.FrontendURL},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	api := server.Group("/api/v1")
 
 	registerAuthRoutes(api)
