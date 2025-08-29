@@ -18,6 +18,57 @@ func NewCategoryHandler() *CategoryHandler {
 	return &CategoryHandler{}
 }
 
+type CreateOrUpdateCategoryRequest struct {
+	Name        string `json:"name" vd:"len($) > 0"`
+	Description string `json:"description"`
+}
+
+func (h *CategoryHandler) checkCategoryExists(name string) (bool, error) {
+	_, err := store.Category.FindByName(name)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+//	@summary		创建分类
+//	@description	创建新的分类
+//	@tags			category
+//	@accept			json
+//	@produce		json
+//	@param			body	body		CreateOrUpdateCategoryRequest	true	"创建分类的请求体"
+//	@success		200		{object}	model.CategoryModel				"创建成功"
+//	@failure		400		{object}	common.FailureResponse			"请求参数错误"
+//	@failure		500		{object}	common.FailureResponse			"服务器内部错误"
+//	@security		ApiKeyAuth
+//	@router			/categories [post]
+//
+// Create 创建新的分类
+func (h *CategoryHandler) Create(ctx context.Context, c *app.RequestContext) {
+	var category model.CategoryModel
+	if err := c.BindAndValidate(&category); err != nil {
+		common.RespBadRequest(c, err.Error())
+		return
+	}
+
+	if exists, err := h.checkCategoryExists(category.Name); err != nil {
+		common.RespInternalServerError(c, "检查分类是否存在失败")
+		return
+	} else if exists {
+		common.RespBadRequest(c, "分类已存在")
+		return
+	}
+
+	if err := store.Category.Create(&category); err != nil {
+		common.RespInternalServerError(c, "创建分类失败")
+		return
+	}
+
+	common.RespSuccess(c, category)
+}
+
 type ListCategoriesRequest struct {
 	store.PaginationParams
 }
@@ -77,57 +128,6 @@ func (h *CategoryHandler) FindByName(ctx context.Context, c *app.RequestContext)
 		return
 	} else if err != nil {
 		common.RespInternalServerError(c, "获取分类失败")
-		return
-	}
-
-	common.RespSuccess(c, category)
-}
-
-type CreateOrUpdateCategoryRequest struct {
-	Name        string `json:"name" vd:"len($) > 0"`
-	Description string `json:"description"`
-}
-
-func (h *CategoryHandler) checkCategoryExists(name string) (bool, error) {
-	_, err := store.Category.FindByName(name)
-	if errors.Is(err, gorm.ErrRecordNotFound) {
-		return false, nil
-	} else if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-//	@summary		创建分类
-//	@description	创建新的分类
-//	@tags			category
-//	@accept			json
-//	@produce		json
-//	@param			body	body		CreateOrUpdateCategoryRequest	true	"创建分类的请求体"
-//	@success		200		{object}	model.CategoryModel				"创建成功"
-//	@failure		400		{object}	common.FailureResponse			"请求参数错误"
-//	@failure		500		{object}	common.FailureResponse			"服务器内部错误"
-//	@security		ApiKeyAuth
-//	@router			/categories [post]
-//
-// Create 创建新的分类
-func (h *CategoryHandler) Create(ctx context.Context, c *app.RequestContext) {
-	var category model.CategoryModel
-	if err := c.BindAndValidate(&category); err != nil {
-		common.RespBadRequest(c, err.Error())
-		return
-	}
-
-	if exists, err := h.checkCategoryExists(category.Name); err != nil {
-		common.RespInternalServerError(c, "检查分类是否存在失败")
-		return
-	} else if exists {
-		common.RespBadRequest(c, "分类已存在")
-		return
-	}
-
-	if err := store.Category.Create(&category); err != nil {
-		common.RespInternalServerError(c, "创建分类失败")
 		return
 	}
 

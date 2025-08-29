@@ -10,4 +10,10 @@
 # test: 测试相关
 # chore: 构建/工具相关
 #
-# 例如：feat(users): 添加用户登录功能
+# 例1：feat(users): 添加用户登录功能
+# 例2：fix: 修复首页加载错误
+# 例3：docs: 更新README文件
+# 例4：style: 调整代码格式
+# 例5：refactor: 重构订单模块
+# 例6：test: 添加单元测试
+# 例7：chore: 更新依赖包
