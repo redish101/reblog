@@ -33,7 +33,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/reblog-backend:${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/reblog-backend:${{ github.sha }}, ${{ env.REGISTRY }}/reblog-backend:latest
 
   build-frontend-image:
     runs-on: ubuntu-latest
@@ -56,7 +56,7 @@ jobs:
           context: ./web
           file: ./web/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/reblog-frontend:${{ github.sha }}
+          tags: ${{ env.REGISTRY }}/reblog-frontend:${{ github.sha }}, ${{ env.REGISTRY }}/reblog-frontend:latest
 
 #   deploy:
 #     runs-on: liteyukios-latest
