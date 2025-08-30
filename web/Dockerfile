@@ -20,6 +20,8 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml* .npmrc* ./
 RUN corepack enable pnpm && pnpm i --frozen-lockfile
 
+RUN pnpm approve-builds
+
 
 # Rebuild the source code only when needed
 FROM base AS builder
