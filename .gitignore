@@ -5,3 +5,5 @@ tmp
 reblog.db
 
 .DS_Store
+
+/helm/reblog/values.local.yaml
