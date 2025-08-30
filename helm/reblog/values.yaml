@@ -22,7 +22,7 @@ backend:
   
   # 镜像配置
   image:
-    repository: reblog-backend
+    repository: redish101/reblog-backend
     tag: "latest"
     pullPolicy: IfNotPresent
   
@@ -132,7 +132,7 @@ frontend:
 
   # 镜像配置
   image:
-    repository: reblog-frontend
+    repository: redish101/reblog-frontend
     tag: "latest"
     pullPolicy: IfNotPresent
   
