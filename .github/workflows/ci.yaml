@@ -6,9 +6,9 @@ on:
       - main
 
 env:
-  USERNAME: ${{ secrets.GITEA_USERNAME }}
-  PASSWORD: ${{ secrets.GITEA_PASSWORD }}
-  REGISTRY: git.liteyuki.org/redish101
+  USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+  REGISTRY: docker.io/redish101
   KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
 jobs:
