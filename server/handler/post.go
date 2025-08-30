@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"git.liteyuki.org/redish101/reblog/internal/model"
-	"git.liteyuki.org/redish101/reblog/internal/store"
-	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/redish101/reblog/internal/model"
+	"github.com/redish101/reblog/internal/store"
+	"github.com/redish101/reblog/server/common"
 	"gorm.io/gorm"
 )
 

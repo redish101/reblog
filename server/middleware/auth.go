@@ -4,10 +4,10 @@ import (
 	"context"
 	"net/http"
 
-	"git.liteyuki.org/redish101/reblog/internal/env"
-	"git.liteyuki.org/redish101/reblog/internal/jwt"
-	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/internal/jwt"
+	"github.com/redish101/reblog/server/common"
 )
 
 func UseAuth(requireOwner bool) app.HandlerFunc {

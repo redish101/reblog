@@ -10,11 +10,11 @@ import (
 	"strings"
 	"time"
 
-	"git.liteyuki.org/redish101/reblog/internal/env"
-	"git.liteyuki.org/redish101/reblog/internal/jwt"
-	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol"
+	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/internal/jwt"
+	"github.com/redish101/reblog/server/common"
 	"github.com/sirupsen/logrus"
 )
 

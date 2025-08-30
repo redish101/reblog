@@ -1,8 +1,8 @@
 package store
 
 import (
-	"git.liteyuki.org/redish101/reblog/internal/env"
-	"git.liteyuki.org/redish101/reblog/internal/model"
+	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/internal/model"
 	"gorm.io/gorm"
 )
 

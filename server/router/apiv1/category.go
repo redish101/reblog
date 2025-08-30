@@ -1,9 +1,9 @@
 package apiv1
 
 import (
-	"git.liteyuki.org/redish101/reblog/server/handler"
-	"git.liteyuki.org/redish101/reblog/server/middleware"
 	"github.com/cloudwego/hertz/pkg/route"
+	"github.com/redish101/reblog/server/handler"
+	"github.com/redish101/reblog/server/middleware"
 )
 
 func registerCategoryRoutes(api *route.RouterGroup) {

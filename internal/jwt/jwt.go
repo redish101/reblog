@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	"git.liteyuki.org/redish101/reblog/internal/env"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/redish101/reblog/internal/env"
 )
 
 // Claims JWT claims 结构

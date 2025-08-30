@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/redish101/reblog/server/common"
 )
 
 type HealthzHandler struct{}

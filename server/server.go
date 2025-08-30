@@ -3,12 +3,12 @@ package server
 import (
 	"strconv"
 
-	_ "git.liteyuki.org/redish101/reblog/docs"
-	"git.liteyuki.org/redish101/reblog/internal/env"
-	"git.liteyuki.org/redish101/reblog/internal/store"
-	"git.liteyuki.org/redish101/reblog/server/router/apiv1"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	_ "github.com/redish101/reblog/docs"
+	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/internal/store"
+	"github.com/redish101/reblog/server/router/apiv1"
 	"github.com/sirupsen/logrus"
 )
 

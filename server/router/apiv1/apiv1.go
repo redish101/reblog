@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/http"
 
-	"git.liteyuki.org/redish101/reblog/internal/env"
-	"git.liteyuki.org/redish101/reblog/server/common"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/hertz-contrib/cors"
 	"github.com/hertz-contrib/swagger"
+	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/server/common"
 	swaggerFiles "github.com/swaggo/files"
 )
 
