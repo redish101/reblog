@@ -1,7 +1,18 @@
 "use client";
 
 import NoSSR from "@/components/no-ssr";
-import { FluentProvider, webLightTheme } from "@fluentui/react-components";
+import {
+  FluentProvider,
+  makeStyles,
+  webLightTheme,
+} from "@fluentui/react-components";
+
+const styles = makeStyles({
+  root: {
+    margin: 0,
+    padding: 0,
+  },
+});
 
 export default function RootLayout({
   children,
@@ -10,12 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body>
-          <NoSSR>
-            <FluentProvider theme={webLightTheme}>
-            {children}
-          </FluentProvider>
-          </NoSSR>
+      <body className={styles().root}>
+        <NoSSR>
+          <FluentProvider theme={webLightTheme}>{children}</FluentProvider>
+        </NoSSR>
       </body>
     </html>
   );
