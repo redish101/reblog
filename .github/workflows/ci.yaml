@@ -1,0 +1,100 @@
+name: Deploy to Kubernetes
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  USERNAME: ${{ secrets.GITEA_USERNAME }}
+  PASSWORD: ${{ secrets.GITEA_PASSWORD }}
+  REGISTRY: git.liteyuki.org/redish101
+  KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
+jobs:
+  build-backend-image:
+    runs-on: liteyukios-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/reblog-backend:${{ github.sha }}
+
+  build-frontend-image:
+    runs-on: liteyukios-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker Registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.USERNAME }}
+          password: ${{ env.PASSWORD }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./web
+          file: ./web/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ env.REGISTRY }}/reblog-frontend:${{ github.sha }}
+
+#   deploy:
+#     runs-on: liteyukios-latest
+#     needs: [build-backend-image, build-frontend-image]
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v5
+
+#       - name: Set up Helm
+#         uses: azure/setup-helm@v4
+
+#       - name: Set up Kubeconfig
+#         run: |
+#           mkdir -p ~/.kube
+#           echo "${{ env.KUBECONFIG }}" > ~/.kube/config
+#           chmod 600 ~/.kube/config
+
+#       - name: Deploy with Helm
+#         run: |
+#           # 定义变量
+#           CHART_PATH="./helm/reblog"
+#           RELEASE_NAME="reblog"
+#           NAMESPACE="reblog"
+
+#           echo "Upgrading release $RELEASE_NAME in namespace $NAMESPACE using local chart at $CHART_PATH..."
+#           helm upgrade --install $RELEASE_NAME $CHART_PATH \
+#             --namespace $NAMESPACE \
+#             --create-namespace \
+#             --set backend.image.tag=${{ github.sha }} \
+#             --set frontend.image.tag=${{ github.sha }} \
+#             -f $CHART_PATH/values.yaml \
+#             --atomic \
+#             --wait
