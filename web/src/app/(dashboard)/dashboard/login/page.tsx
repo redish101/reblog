@@ -14,11 +14,6 @@ import {
   makeStyles,
   tokens,
   Spinner,
-  useId,
-  useToastController,
-  Toast,
-  ToastTitle,
-  Toaster,
 } from "@fluentui/react-components";
 import { PersonRegular, LockClosedRegular } from "@fluentui/react-icons";
 
@@ -171,9 +166,7 @@ const useStyles = makeStyles({
   },
 });
 
-interface LoginPageProps {}
-
-export default function Login({}: LoginPageProps) {
+export default function Login() {
   const styles = useStyles();
   const [step, setStep] = useState<"email" | "password">("email");
   const [email, setEmail] = useState("");

@@ -5,7 +5,6 @@ import { lightTheme } from "@/lib/theme";
 import {
   FluentProvider,
   makeStyles,
-  Toaster,
 } from "@fluentui/react-components";
 
 const styles = makeStyles({
