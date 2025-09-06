@@ -7,3 +7,4 @@ reblog.db
 .DS_Store
 
 /helm/reblog/values.local.yaml
+/helm/reblog/values.aspire.yaml

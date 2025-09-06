@@ -26,4 +26,4 @@ const api = new Api({
   baseUrl: getApiBaseUrl(),
 });
 
-export { api };
+export { api, getApiBaseUrl };

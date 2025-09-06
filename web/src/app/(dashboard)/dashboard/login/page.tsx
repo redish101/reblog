@@ -16,6 +16,7 @@ import {
   Spinner,
 } from "@fluentui/react-components";
 import { PersonRegular, LockClosedRegular } from "@fluentui/react-icons";
+import { getApiBaseUrl } from "@/lib/api";
 
 const useStyles = makeStyles({
   container: {
@@ -200,8 +201,14 @@ export default function Login() {
   };
 
   const handleGitHubLogin = () => {
-    // TODO: 实现GitHub OAuth登录
-    console.log("GitHub login clicked");
+    // 重定向到后端的 GitHub OAuth 登录端点
+    // 登录成功后重定向回仪表板页面
+    const redirectUri = `${window.location.origin}/dashboard`;
+    const apiBaseUrl = getApiBaseUrl();
+
+    // 构建完整的GitHub登录URL
+    const githubLoginUrl = `${apiBaseUrl}/auth/github?redirect_uri=${encodeURIComponent(redirectUri)}`;
+    window.location.href = githubLoginUrl;
   };
 
   // 返回到邮箱步骤

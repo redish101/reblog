@@ -49,6 +49,12 @@ export interface HandlerLogoutResponse {
   message?: string;
 }
 
+export interface HandlerUserInfoResponse {
+  email?: string;
+  nickname?: string;
+  username?: string;
+}
+
 export interface ModelCategoryModel {
   created_at?: string;
   deleted_at?: GormDeletedAt;
@@ -460,6 +466,25 @@ export class Api<
       this.request<HandlerLogoutResponse, CommonFailureResponse>({
         path: `/auth/logout`,
         method: "POST",
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description 获取当前登录用户的信息
+     *
+     * @tags auth
+     * @name GetAuth
+     * @summary 获取当前用户信息
+     * @request GET:/auth/me
+     * @secure
+     */
+    getAuth: (params: RequestParams = {}) =>
+      this.request<HandlerUserInfoResponse, CommonFailureResponse>({
+        path: `/auth/me`,
+        method: "GET",
         secure: true,
         type: ContentType.Json,
         format: "json",

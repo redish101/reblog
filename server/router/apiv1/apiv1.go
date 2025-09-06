@@ -2,6 +2,7 @@ package apiv1
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -15,11 +16,14 @@ import (
 
 func RegisterRoutes(server *server.Hertz) {
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{env.FrontendURL},
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowOrigins: []string{env.FrontendURL, env.FrontendURL + "/*"},
+		AllowMethods:    []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:   []string{"Origin", "Content-Type", "Accept"},
+		AllowWildcard: true,
 		AllowCredentials: true,
 	}))
+
+	fmt.Println("Allowed CORS origins:", env.FrontendURL+"/*")
 
 	api := server.Group("/api/v1")
 

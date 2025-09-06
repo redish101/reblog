@@ -2,10 +2,8 @@
 
 import NoSSR from "@/components/no-ssr";
 import { lightTheme } from "@/lib/theme";
-import {
-  FluentProvider,
-  makeStyles,
-} from "@fluentui/react-components";
+import { AuthProvider } from "@/contexts/auth-context";
+import { FluentProvider, makeStyles } from "@fluentui/react-components";
 
 const styles = makeStyles({
   root: {
@@ -23,7 +21,9 @@ export default function RootLayout({
     <html lang="zh-CN">
       <body className={styles().root}>
         <NoSSR>
-          <FluentProvider theme={lightTheme}>{children}</FluentProvider>
+          <FluentProvider theme={lightTheme}>
+            <AuthProvider>{children}</AuthProvider>
+          </FluentProvider>
         </NoSSR>
       </body>
     </html>

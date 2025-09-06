@@ -106,7 +106,7 @@ func (h *AuthHandler) GitHubCallback(ctx context.Context, c *app.RequestContext)
 	// 使用授权码换取访问令牌
 	accessToken, err := h.exchangeCodeForToken(string(code))
 	if err != nil {
-		logrus.Errorf("Failed to exchange code for token: %v", err)
+		logrus.Errorf("[AUTH] 获取访问令牌失败: %v", err)
 		common.RespInternalServerError(c, "获取访问令牌失败")
 		return
 	}
@@ -114,7 +114,7 @@ func (h *AuthHandler) GitHubCallback(ctx context.Context, c *app.RequestContext)
 	// 使用访问令牌获取用户信息
 	githubUser, err := h.getUserInfo(accessToken)
 	if err != nil {
-		logrus.Errorf("Failed to get user info: %v", err)
+		logrus.Errorf("[AUTH] 获取用户信息失败: %v", err)
 		common.RespInternalServerError(c, "获取用户信息失败")
 		return
 	}
@@ -122,7 +122,7 @@ func (h *AuthHandler) GitHubCallback(ctx context.Context, c *app.RequestContext)
 	// 获取用户邮箱信息 (只使用已验证的邮箱)
 	email, err := h.getUserPrimaryEmail(accessToken)
 	if err != nil {
-		logrus.Errorf("Failed to get user email: %v", err)
+		logrus.Errorf("[AUTH] 获取用户邮箱失败: %v", err)
 		common.RespInternalServerError(c, "获取用户邮箱失败")
 		return
 	}
@@ -136,7 +136,7 @@ func (h *AuthHandler) GitHubCallback(ctx context.Context, c *app.RequestContext)
 	// 生成 JWT token
 	token, err := jwt.GenerateToken(githubUser.Login, nickname, email)
 	if err != nil {
-		logrus.Errorf("Failed to generate JWT token: %v", err)
+		logrus.Errorf("[AUTH} 生成令牌失败: %v", err)
 		common.RespInternalServerError(c, "生成令牌失败")
 		return
 	}
@@ -295,5 +295,37 @@ func (h *AuthHandler) Logout(ctx context.Context, c *app.RequestContext) {
 
 	common.RespSuccess(c, LogoutResponse{
 		Message: "登出成功",
+	})
+}
+
+type UserInfoResponse struct {
+	Username string `json:"username"`
+	Nickname string `json:"nickname"`
+	Email    string `json:"email"`
+}
+
+//	@summary		获取当前用户信息
+//	@description	获取当前登录用户的信息
+//	@tags			auth
+//	@accept			json
+//	@produce		json
+//	@success		200	{object}	UserInfoResponse			"用户信息"
+//	@failure		401	{object}	common.FailureResponse	"未授权"
+//	@security		ApiKeyAuth
+//	@router			/auth/me [get]
+//
+// GetCurrentUser 获取当前用户信息
+func (h *AuthHandler) GetCurrentUser(ctx context.Context, c *app.RequestContext) {
+	// 从中间件中获取当前用户信息
+	currentUser := common.GetCurrentUser(ctx)
+	if currentUser == nil {
+		common.RespFailure(c, http.StatusUnauthorized, "未登录")
+		return
+	}
+
+	common.RespSuccess(c, UserInfoResponse{
+		Username: currentUser.Username,
+		Nickname: currentUser.Nickname,
+		Email:    currentUser.Email,
 	})
 }

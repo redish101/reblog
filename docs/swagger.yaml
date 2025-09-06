@@ -58,6 +58,15 @@ definitions:
       message:
         type: string
     type: object
+  handler.UserInfoResponse:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      username:
+        type: string
+    type: object
   model.CategoryModel:
     properties:
       created_at:
@@ -271,6 +280,27 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: 登出
+      tags:
+      - auth
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: 获取当前登录用户的信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/handler.UserInfoResponse'
+        "401":
+          description: 未授权
+          schema:
+            $ref: '#/definitions/common.FailureResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: 获取当前用户信息
       tags:
       - auth
   /categories:
