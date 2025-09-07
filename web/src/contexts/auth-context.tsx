@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { GlobalLoading } from "@/components/global-loading";
 
 export interface User {
   username: string;
@@ -74,7 +75,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     checkAuthStatus,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <GlobalLoading isVisible={isLoading} />
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

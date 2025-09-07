@@ -2,12 +2,10 @@
 
 import React, { ComponentType, useEffect } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { Spinner } from "@fluentui/react-components";
 
 interface WithAuthOptions {
   requireAuth?: boolean;
   redirectTo?: string;
-  loadingComponent?: ComponentType;
 }
 
 /**
@@ -22,7 +20,6 @@ export function withAuth<P extends object>(
   const {
     requireAuth = true,
     redirectTo = "/dashboard/login",
-    loadingComponent: LoadingComponent,
   } = options;
 
   const AuthenticatedComponent = (props: P) => {
@@ -34,26 +31,9 @@ export function withAuth<P extends object>(
       }
     }, [isAuthenticated, isLoading]);
 
-    // 如果正在加载，显示加载组件
+    // 如果正在加载，不渲染组件，由全局加载组件处理
     if (isLoading) {
-      if (LoadingComponent) {
-        return <LoadingComponent />;
-      }
-      return (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-            flexDirection: "column",
-            gap: "16px",
-          }}
-        >
-          <Spinner size="large" />
-          <div>正在加载...</div>
-        </div>
-      );
+      return null;
     }
 
     // 如果需要认证但未认证，不渲染组件（即将重定向）
@@ -91,15 +71,14 @@ export function withOptionalAuth<P extends object>(
 }
 
 /**
- * 自定义加载组件的HOC
+ * 自定义加载组件的HOC（已废弃，使用全局加载组件）
+ * @deprecated 使用全局加载组件，直接使用 withAuth 即可
  */
 export function withAuthAndLoading<P extends object>(
   WrappedComponent: ComponentType<P>,
   LoadingComponent: ComponentType,
-  options?: Omit<WithAuthOptions, "loadingComponent">,
+  options?: WithAuthOptions,
 ) {
-  return withAuth(WrappedComponent, {
-    ...options,
-    loadingComponent: LoadingComponent,
-  });
+  // 忽略LoadingComponent参数，使用全局加载
+  return withAuth(WrappedComponent, options);
 }
