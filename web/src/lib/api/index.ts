@@ -24,6 +24,9 @@ function getApiBaseUrl(): string {
 
 const api = new Api({
   baseUrl: getApiBaseUrl(),
+  baseApiParams: {
+    credentials: "include"
+  }
 });
 
 export { api, getApiBaseUrl };
