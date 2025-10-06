@@ -1,0 +1,3 @@
+package serverless
+
+func Execute() {}
