@@ -53,7 +53,7 @@ func listenForPostChanges() {
 			return
 
 		case ev := <-eventCh:
-			logrus.Debugf("[COPYRIGHT] 文章创建事件: 作者=%s 标题=%s IPFSURL=%s 交易哈希=%s",
+			logrus.Debugf("[COPYRIGHT] 文章变更事件: 作者=%s 标题=%s IPFSURL=%s 交易哈希=%s",
 				ev.Author.Hex(), ev.Title, ev.IpfsURL, ev.Raw.TxHash.Hex())
 			post, err := store.Post.FindBySlug(ev.Slug, env.OwnerEmail)
 			if err != nil {
@@ -61,6 +61,7 @@ func listenForPostChanges() {
 				return
 			}
 			post.IPFSURL = ev.IpfsURL
+			post.BlockNumber = uint(ev.Raw.BlockNumber)
 			if post.CreateTXHash == "" {
 				post.CreateTXHash = ev.Raw.TxHash.Hex()
 			} else {

@@ -63,7 +63,8 @@ func (h *PostHandler) findOrCreateTags(tagNames []string) ([]model.TagModel, err
 }
 
 func (h *PostHandler) afterCreateOrUpdate(post *model.PostModel) {
-	postJSONBytes, err := json.Marshal(post)
+	postOnChain := model.PostOnIPFS{}.FromPostModel(post)
+	postJSONBytes, err := json.Marshal(postOnChain)
 	if err != nil {
 		logrus.Warnf("[POST] 无法序列化文章 (slug=%s): %v", post.Slug, err)
 		return

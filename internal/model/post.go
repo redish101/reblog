@@ -18,8 +18,33 @@ type PostModel struct {
 
 	IPFSURL string `json:"ipfs_url"`
 
+	BlockNumber  uint   `json:"block_number"`
 	CreateTXHash string `json:"create_tx_hash"`
 	UpdateTXHash string `json:"update_tx_hash"`
+}
+
+type PostOnIPFS struct {
+	Title    string   `json:"title"`
+	Slug     string   `json:"slug"`
+	Category string   `json:"category"`
+	Tags     []string `json:"tags"`
+	Summary  string   `json:"summary"`
+	Content  string   `json:"content"`
+}
+
+func (PostOnIPFS) FromPostModel(post *PostModel) *PostOnIPFS {
+	var tagNames []string
+	for _, tag := range post.Tags {
+		tagNames = append(tagNames, tag.Name)
+	}
+	return &PostOnIPFS{
+		Title:    post.Title,
+		Slug:     post.Slug,
+		Category: post.Category.Name,
+		Tags:     tagNames,
+		Summary:  post.Summary,
+		Content:  post.Content,
+	}
 }
 
 func (PostModel) TableName() string {
