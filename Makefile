@@ -6,6 +6,7 @@ SWAG := swag
 AIR := air
 GO := go
 GOFUMPT := gofumpt
+ABIGEN := abigen
 
 .PHONY: dev all apidoc fmt
 
@@ -17,6 +18,9 @@ dev:
 
 apidoc:
 	$(SWAG) init --parseDependency --parseInternal --output ./docs --generalInfo server/server.go
+
+abi:
+	$(ABIGEN) --abi ./internal/copyright/abi.json --pkg copyright --type Copyright --out ./internal/copyright/generated.go
 
 fmt:
 	$(GOFUMPT) -l -w .

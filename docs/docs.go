@@ -1128,6 +1128,9 @@ const docTemplate = `{
                 "content": {
                     "type": "string"
                 },
+                "create_tx_hash": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -1136,6 +1139,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "ipfs_url": {
+                    "type": "string"
                 },
                 "is_draft": {
                     "type": "boolean"
@@ -1153,6 +1159,9 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "update_tx_hash": {
                     "type": "string"
                 },
                 "updated_at": {

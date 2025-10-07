@@ -10,17 +10,20 @@ import (
 )
 
 var (
-	Dev               bool
-	Port              int
-	DatabaseURL       string
-	SecretKey         string
-	OwnerEmail        string
-	JWTPrivateKey     ed25519.PrivateKey
-	JWTPublicKey      ed25519.PublicKey
-	GitHubClientID    string
-	GitHubSecret      string
-	GitHubRedirectURL string
-	FrontendURL       string
+	Dev                      bool
+	Port                     int
+	DatabaseURL              string
+	SecretKey                string
+	OwnerEmail               string
+	JWTPrivateKey            ed25519.PrivateKey
+	JWTPublicKey             ed25519.PublicKey
+	GitHubClientID           string
+	GitHubSecret             string
+	GitHubRedirectURL        string
+	FrontendURL              string
+	CopyrightContractAddress string
+	CopyrightRPCURL          string
+	IPFSAPIURL               string
 )
 
 func Init() {
@@ -35,6 +38,9 @@ func Init() {
 	GitHubSecret = getAsString("GITHUB_SECRET", "")
 	GitHubRedirectURL = getAsString("GITHUB_REDIRECT_URL", "http://localhost:3000/api/v1/auth/github/callback")
 	FrontendURL = getAsString("FRONTEND_URL", "http://localhost:3000")
+	CopyrightContractAddress = getAsString("COPYRIGHT_CONTRACT_ADDRESS", "0x3bc13fB85EfB2b7C8Ab6D1350aCc3f9e91D8b234")
+	CopyrightRPCURL = getAsString("COPYRIGHT_RPC_URL", "https://sepolia.infura.io")
+	IPFSAPIURL = getAsString("IPFS_API_URL", "http://localhost:5001")
 
 	// 从 SecretKey 生成 ed25519 密钥对
 	generateKeyPair()

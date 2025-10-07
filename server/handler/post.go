@@ -7,9 +7,12 @@ import (
 	"strings"
 
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/json"
+	"github.com/redish101/reblog/internal/ipfs"
 	"github.com/redish101/reblog/internal/model"
 	"github.com/redish101/reblog/internal/store"
 	"github.com/redish101/reblog/server/common"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 )
 
@@ -57,6 +60,26 @@ func (h *PostHandler) findOrCreateTags(tagNames []string) ([]model.TagModel, err
 		}
 	}
 	return tags, nil
+}
+
+func (h *PostHandler) afterCreateOrUpdate(post *model.PostModel) {
+	postJSONBytes, err := json.Marshal(post)
+	if err != nil {
+		logrus.Warnf("[POST] 无法序列化文章 (slug=%s): %v", post.Slug, err)
+		return
+	}
+
+	cid, err := ipfs.UploadToIPFS(postJSONBytes)
+	if err != nil {
+		logrus.Warnf("[POST] 无法上传文章到 IPFS (slug=%s): %v", post.Slug, err)
+		return
+	}
+
+	post.IPFSURL = "ipfs://" + cid
+	if err := store.Post.Update(post); err != nil {
+		logrus.Warnf("[POST] 无法更新文章的 IPFS URL (slug=%s): %v", post.Slug, err)
+		return
+	}
 }
 
 type CreateOrUpdatePostRequest struct {
@@ -129,6 +152,8 @@ func (h *PostHandler) Create(ctx context.Context, c *app.RequestContext) {
 		common.RespInternalServerError(c, err.Error())
 		return
 	}
+
+	go h.afterCreateOrUpdate(post)
 
 	common.RespSuccess(c, post)
 }
@@ -296,6 +321,8 @@ func (h *PostHandler) Update(ctx context.Context, c *app.RequestContext) {
 		common.RespInternalServerError(c, "更新文章失败")
 		return
 	}
+
+	go h.afterCreateOrUpdate(post)
 
 	common.RespSuccess(c, post)
 }

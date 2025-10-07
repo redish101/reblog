@@ -6,7 +6,9 @@ import (
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	_ "github.com/redish101/reblog/docs"
+	"github.com/redish101/reblog/internal/copyright"
 	"github.com/redish101/reblog/internal/env"
+	"github.com/redish101/reblog/internal/ipfs"
 	"github.com/redish101/reblog/internal/store"
 	"github.com/redish101/reblog/server/router/apiv1"
 	"github.com/sirupsen/logrus"
@@ -37,6 +39,10 @@ func Start() {
 	if err := store.Init(); err != nil {
 		logrus.Fatalf("[STORE] 数据库连接失败: %v", err)
 	}
+
+	ipfs.Init()
+
+	copyright.Init()
 
 	logrus.Infoln("[HTTP] 正在启动服务")
 

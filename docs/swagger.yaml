@@ -90,12 +90,16 @@ definitions:
         type: integer
       content:
         type: string
+      create_tx_hash:
+        type: string
       created_at:
         type: string
       deleted_at:
         $ref: '#/definitions/gorm.DeletedAt'
       id:
         type: integer
+      ipfs_url:
+        type: string
       is_draft:
         type: boolean
       slug:
@@ -107,6 +111,8 @@ definitions:
           $ref: '#/definitions/model.TagModel'
         type: array
       title:
+        type: string
+      update_tx_hash:
         type: string
       updated_at:
         type: string

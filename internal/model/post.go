@@ -15,6 +15,11 @@ type PostModel struct {
 	IsDraft bool `json:"is_draft"`
 
 	Content string `json:"content"`
+
+	IPFSURL string `json:"ipfs_url"`
+
+	CreateTXHash string `json:"create_tx_hash"`
+	UpdateTXHash string `json:"update_tx_hash"`
 }
 
 func (PostModel) TableName() string {

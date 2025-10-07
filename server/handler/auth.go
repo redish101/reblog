@@ -309,7 +309,7 @@ type UserInfoResponse struct {
 //	@tags			auth
 //	@accept			json
 //	@produce		json
-//	@success		200	{object}	UserInfoResponse			"用户信息"
+//	@success		200	{object}	UserInfoResponse		"用户信息"
 //	@failure		401	{object}	common.FailureResponse	"未授权"
 //	@security		ApiKeyAuth
 //	@router			/auth/me [get]

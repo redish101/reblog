@@ -1121,6 +1121,9 @@
                 "content": {
                     "type": "string"
                 },
+                "create_tx_hash": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -1129,6 +1132,9 @@
                 },
                 "id": {
                     "type": "integer"
+                },
+                "ipfs_url": {
+                    "type": "string"
                 },
                 "is_draft": {
                     "type": "boolean"
@@ -1146,6 +1152,9 @@
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "update_tx_hash": {
                     "type": "string"
                 },
                 "updated_at": {
