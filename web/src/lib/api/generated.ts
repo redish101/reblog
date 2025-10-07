@@ -65,17 +65,22 @@ export interface ModelCategoryModel {
 }
 
 export interface ModelPostModel {
+  block_number?: number;
   category?: ModelCategoryModel;
   category_id?: number;
   content?: string;
+  create_tx_hash?: string;
   created_at?: string;
   deleted_at?: GormDeletedAt;
   id?: number;
+  ipfs_url?: string;
   is_draft?: boolean;
+  owner_address?: string;
   slug?: string;
   summary?: string;
   tags?: ModelTagModel[];
   title?: string;
+  update_tx_hash?: string;
   updated_at?: string;
 }
 

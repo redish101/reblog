@@ -16,8 +16,9 @@ type PostModel struct {
 
 	Content string `json:"content"`
 
-	IPFSURL string `json:"ipfs_url"`
+	IPFSURL     string `json:"ipfs_url"`
 
+	OwnerAddress string `gorm:"index" json:"owner_address"`
 	BlockNumber  uint   `json:"block_number"`
 	CreateTXHash string `json:"create_tx_hash"`
 	UpdateTXHash string `json:"update_tx_hash"`

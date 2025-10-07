@@ -60,6 +60,7 @@ func listenForPostChanges() {
 				logrus.Warnf("[COPYRIGHT] 无法找到文章 (slug=%s): %v", ev.Slug, err)
 				return
 			}
+			post.OwnerAddress = ev.Author.Hex()
 			post.IPFSURL = ev.IpfsURL
 			post.BlockNumber = uint(ev.Raw.BlockNumber)
 			if post.CreateTXHash == "" {

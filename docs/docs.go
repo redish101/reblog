@@ -1119,6 +1119,9 @@ const docTemplate = `{
         "model.PostModel": {
             "type": "object",
             "properties": {
+                "block_number": {
+                    "type": "integer"
+                },
                 "category": {
                     "$ref": "#/definitions/model.CategoryModel"
                 },
@@ -1145,6 +1148,9 @@ const docTemplate = `{
                 },
                 "is_draft": {
                     "type": "boolean"
+                },
+                "owner_address": {
+                    "type": "string"
                 },
                 "slug": {
                     "type": "string"

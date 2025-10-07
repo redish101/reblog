@@ -84,6 +84,8 @@ definitions:
     type: object
   model.PostModel:
     properties:
+      block_number:
+        type: integer
       category:
         $ref: '#/definitions/model.CategoryModel'
       category_id:
@@ -102,6 +104,8 @@ definitions:
         type: string
       is_draft:
         type: boolean
+      owner_address:
+        type: string
       slug:
         type: string
       summary:

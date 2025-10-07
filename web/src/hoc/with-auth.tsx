@@ -17,10 +17,7 @@ export function withAuth<P extends object>(
   WrappedComponent: ComponentType<P>,
   options: WithAuthOptions = {},
 ) {
-  const {
-    requireAuth = true,
-    redirectTo = "/dashboard/login",
-  } = options;
+  const { requireAuth = true, redirectTo = "/dashboard/login" } = options;
 
   const AuthenticatedComponent = (props: P) => {
     const { isAuthenticated, isLoading } = useAuth();
